@@ -1,6 +1,6 @@
 # jQuery Fancyform (Javascript)
 
-Fancyform is a tool that offers a nice and elegant way to transform your HTML elements into custom styled elements. It is build on the Javascript framework jQuery and is easy to implement and customize. The elements you can style are **input:radio**, **input:checkbox**, **select** and **textarea**. You can see a [demo](http://lutrasoft.nl/jQuery/fancyform/) at the website.
+Fancyform is a tool that offers a nice and elegant way to transform your HTML elements into custom styled elements. It is build on the Javascript framework jQuery and is easy to implement and customize. The elements you can style are **input:radio**, **input:checkbox**, **input:file**, **select** and **textarea**. You can see a [demo](http://lutrasoft.nl/jQuery/fancyform/) at the website.
 
 ## Example code
 ### Radio button
@@ -40,6 +40,14 @@ The SELECT will be changed into a UL list, it is possible to use the default SEL
         valueTemplate: function () { return $(this).text(); }, 		// The selected value, after initial value	
 
         ellipsisLength: null // The max length of the selected text
+    });
+
+##File
+Easily change the file input to a good looking file input.
+
+    $("input:file").transformFile({
+        cssClass : "customInput",
+        label : "Browse..."
     });
 
 ##Textarea
