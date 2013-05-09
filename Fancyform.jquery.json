@@ -1,7 +1,7 @@
 {
     "name": "Fancyform",
     "title": "Fancyform",
-    "description": "jQuery plugin for color manipulation and animation support.",
+    "description": "Fancyform is a tool that offers a nice and elegant way to transform your HTML elements into custom styled elements. It is build on the Javascript framework jQuery and is easy to implement and customize. The elements you can style are input:radio, input:checkbox, input:file, select and textarea.",
     "keywords": [
         "form",
         "input",
@@ -9,7 +9,7 @@
 		"ui",
 		"jquery"
     ],
-    "version": "1.3.4",
+    "version": "1.3.4.1",
     "author": {
         "name": "Lutrasoft",
         "url": ""
