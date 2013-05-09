@@ -1,0 +1,41 @@
+{
+    "name": "Fancyform",
+    "title": "Fancyform",
+    "description": "jQuery plugin for color manipulation and animation support.",
+    "keywords": [
+        "form",
+        "input",
+		"fancy",
+		"ui",
+		"jquery"
+    ],
+    "version": "1.3.4",
+    "author": {
+        "name": "Lutrasoft",
+        "url": ""
+    },
+    "maintainers": [
+        {
+            "name": "Niels den Otter",
+            "url": "https://github.com/Tsukasa1989"
+        }
+    ],
+    "licenses": [
+        {
+            "type": "MIT",
+            "url": "https://github.com/jquery/jquery-color/blob/2.1.2/MIT-LICENSE.txt"
+        },
+		{
+            "type": "GPL",
+            "url": "http://www.gnu.org/licenses/gpl.html"
+        }
+    ],
+    "bugs": "https://github.com/Lutrasoft/Fancyform/issues",
+    "homepage": "https://github.com/Lutrasoft/Fancyform",
+    "docs": "https://github.com/Lutrasoft/Fancyform/wiki",
+    "download": "https://github.com/Lutrasoft/Fancyform",
+	"demo" : "http://lutrasoft.nl/jQuery/fancyform/",
+    "dependencies": {
+        "jquery": ">=1.6"
+    }
+}
