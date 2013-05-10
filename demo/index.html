@@ -1,0 +1,220 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title>Fancyform - Lutrasoft</title>
+
+<!-- jQuery required -->
+<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
+
+<!-- jQueryUI only used to show slider, not required for plugin -->
+<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.8.6/jquery-ui.min.js"></script>
+<link href="ui-lightness/jquery-ui-1.8.6.custom.css" type="text/css" rel="stylesheet" />
+ 
+<!-- Fancyform -->
+<script type="text/javascript" src="../live/jquery.mousewheel.js"></script>
+<script type="text/javascript" src="../lib/jquery.hotkeys.js"></script>
+<script type="text/javascript" src="jquery.fancyform.min.js"></script>
+
+<!-- Demo JS -->
+<script type="text/javascript" src="scripts/demo.js"></script>
+
+<!-- Prettify -->
+<script type="text/javascript" src="scripts/prettify.js"></script>
+<link href="css/prettify.css" type="text/css" rel="stylesheet" />
+
+
+<link href="css/demo.css" type="text/css" rel="stylesheet" />
+</head>
+
+<body>
+	<div id="container">
+		<h1>Fancyform</h1>
+		
+		<p>
+			Fancyform is a tool that offers a nice and elegant way to transform your HTML elements into custom styled elements. It is build on the Javascript framework jQuery and is easy to implement and customize. The elements you can style are <strong>input:radio</strong>, <strong>input:checkbox</strong>, <strong>select</strong> and <strong>textarea</strong>.
+		</p>
+		
+		<p>Now also available on <a href="https://github.com/Lutrasoft/Fancyform">GitHub</a>!</p>
+		
+		<h2>Radio button</h2>
+		
+		<p>
+			You can transform your own radio button into any image you want to use. If an image is clicked the radio button will be checked and the <code class="prettyprint">$("input:radio").change();</code> event will be triggered.
+		</p>
+		<div class="radio">
+			<input type="radio" name="radio" /> Yes  
+			<input name="radio" type="radio" /> No 
+			<input name="radio" type="radio" /> Unknown
+		</div>
+		<pre class="prettyprint">$("input:radio").transformRadio({
+	checked : "img/chk_on.png", 	// Checked image to show
+	unchecked : "img/chk_off.png"	// Unchecked image to show
+});</pre>
+		<h2>Checkbox</h2>
+		<p>
+			You can transform your own checkbox into any image you want to use. If an image is clicked the checkbox will be checked and the <code class="prettyprint">$("input:checkbox").change();</code> event will be triggered.<br />
+			It is also possible to use the checkboxes as a Tri-State the, if you put them in and UL LI treeview.
+		</p> 
+		<div>
+			<input type="checkbox" name="check" /> Optie <input name="check" type="checkbox" /> Optie<br />
+			<input type="checkbox" name="check" /> Optie <input name="check" type="checkbox" /> Optie<br />
+			<input type="checkbox" name="check" /> Optie <input name="check" type="checkbox" /> Optie<br />
+		</div>
+		<pre class="prettyprint">$("input:checkbox").transformCheckbox({
+	checked: "/images/content/filterBoxCheckboxChecked.jpg", // Checked image
+	unchecked: "/images/content/filterBoxCheckbox.jpg",		// Unchecked image
+	disabledChecked : "/images/content/filterBoxCheckboxDisabledChecked.jpg", // Disabled checked image
+	disabledUnchecked : "/images/content/filterBoxCheckboxDisabledUnChecked.jpg", // Disabled unchecked image
+	tristateHalfChecked : "/images/content/filterBoxCheckboxDisabledUnChecked.jpg", // Tri-state image
+	changeHandler: function (is_checked) { }, // handler when checkbox is clicked
+	trigger: "self", // Can be self, parent
+	tristate : false // Use tri state? need to be ul > li > checkbox // ul > li > ul > li > checkbox
+});</pre>
+		
+		<h2>Select (dropdown list)</h2>
+		<p>
+			The SELECT will be changed into a UL list, it is possible to use the default SELECT, OPTION and OPTGROUP to transform it into something you want.
+			When the SELECT is opened, the opened LI will have a class .open, so you can define new styles to an opened dropdown.
+		</p>
+		
+		<p><strong>Without fancyform</strong><p>
+		<select name="select_01">
+			<option>Select a Country</option>
+			<option>Belgium</option>
+			<option>France</option>
+			<optgroup label="Belgium (Optgroup)">
+				<option>Dutch part</option>
+				<option>France part</option>        
+			</optgroup>
+			<option>England</option>       
+		</select><br />
+		
+		<p><strong>With fancyform (default settings)</strong></p>
+		<select id="select" name="select_02">
+			<option>Select a Country</option>
+			<option>Belgium</option>
+			<option>France</option>
+			<optgroup label="Belgium (Optgroup)">
+				<option>Dutch part</option>
+				<option>France part</option>        
+			</optgroup>
+			<option>England</option>        
+		</select>
+		<pre class="prettyprint">$("#select").transformSelect();</pre>
+		
+		<p><strong>Transformselect with manual input</strong></p>
+		<select id="select2" name="select_03">
+			<option>Select a Country</option>
+			<option>Belgium</option>
+			<option>France</option>
+			<optgroup label="Belgium (Optgroup)">
+				<option>Dutch part</option>
+				<option>France part</option>        
+			</optgroup>
+			<option>England</option>    
+		</select>
+		<div class="clear"></div>
+		<pre class="prettyprint">$("#select2").transformSelect({
+	acceptManualInput : true,
+	showFirstItemInDrop : false
+});</pre>
+
+		<p><strong>Transformselect using multiple</strong></p>
+				<select id="select3" multiple="multiple" name="select_04">
+					<option>Select a Country</option>
+					<option>Belgium</option>
+					<option>France</option>
+					<optgroup label="Belgium (Optgroup)">
+						<option>Dutch part</option>
+						<option>France part</option>        
+					</optgroup>
+					<option>England</option>    
+				</select>
+				<div class="clear"></div>
+				<pre class="prettyprint">$("#select3").transformSelect({
+					showFirstItemInDrop : false
+				});</pre>
+		
+		<p><strong>All options</strong></p>
+		<pre class="prettyprint">dropDownClass: "transformSelect", 	// Class of the main UL
+showFirstItemInDrop: true, 		// Show or hide the first item within the dropdown (e.g. "Select a country")
+acceptManualInput: false, 		// You want to be able to type your own value? ({name}_backup will be created with a new input {name})
+useManualInputAsFilter : false,		// Use the manual input as a filter (add data-settings='{"alwaysvisible" : true}' to the option if you don't want the element to hide)
+
+subTemplate: function () { return "<span>" + $(this).text() + "</span>"; }, 	// The template of the LI within the dropdown
+initValue: function () { return $(this).text(); },		// The inital value of the <span></span> of the selected element
+valueTemplate: function () { return $(this).text(); }, 		// The selected value, after initial value	
+
+ellipsisLength: null // The max length of the selected text </pre>
+
+		<p><strong>Using jQuery validate plugin</strong></p>
+		<pre class="prettyprint">jQuery.validator.addMethod("fancyformSelect", function(value, element, param) {
+	$(element).nextAll("ul:first")[element.selectedIndex ? "removeClass" : "addClass"]("error");
+	return element.selectedIndex;
+});
+		</pre>
+		
+		<h2>Textarea:</h2>
+		<p>You can add custom slider to the textarea!</p>
+		<div class="row"></div>
+			<div >
+				<textarea cols="50" rows="10">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Praesent eu purus ut lorem fringilla posuere. Curabitur id diam nec magna lacinia iaculis. Aliquam scelerisque congue pretium. Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos himenaeos. Nam tempor ligula nec turpis sodales ut pharetra nisl condimentum. In hac habitasse platea dictumst. Curabitur ut nulla nibh, at tempus elit. Aliquam erat volutpat. Pellentesque vitae neque dolor. Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos himenaeos. Fusce cursus tincidunt magna, sit amet euismod justo laoreet et. Aliquam erat volutpat. Quisque blandit commodo urna ut vulputate.
+
+Suspendisse id vulputate risus. Aenean vitae elit vel velit feugiat blandit. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Sed sagittis tristique nunc, sit amet volutpat ligula fringilla et. Ut tellus magna, tristique sed vulputate quis, tristique a urna. Maecenas lacinia ultricies arcu. Vivamus consectetur, sapien vel tincidunt faucibus, purus arcu tristique enim, et pellentesque elit lectus non lorem. Fusce a feugiat lacus. Etiam leo arcu, porttitor sit amet mollis eget, ornare in dui. Vestibulum cursus, erat aliquam tincidunt sodales, nulla lectus commodo est, vitae hendrerit odio leo nec magna. Ut eget eros mi. Nullam arcu leo, tincidunt a pretium ut, imperdiet nec diam. Mauris sit amet ligula in nisi venenatis aliquam.</textarea>
+			</div>
+			<div id="slider"></div>
+		<div class="row"></div>
+		<pre class="prettyprint">// Apply the transform
+$("textarea").transformTextarea();
+	
+// Use a custom slider	
+$( "#slider" ).slider({
+	orientation: "vertical",
+	range: "min",
+	min: 0,
+	max: 100,
+	value: 100,
+	slide: function( event, ui ) {
+		// Top = 0
+		var perc = 100 - ui.value;
+		
+		// Scroll textarea to given percentage
+		$("textarea").transformTextarea("scrollToPercentage", perc);
+	}
+});
+
+// Move the slider to the scrollHeight of the textarea
+$("textarea").bind("scrollToPx", function(e, px, percentage){
+	$( "#slider" ).slider("option", "value", 100 - percentage);	
+});</pre>
+		<!--
+		<br />
+		<strong>ScrollTo:</strong><br />
+		Percentage: <input type="text" id="percentage" /><br />
+		Px: <input type="text" id="px" /><br />
+		<br />
+		<input type="button" id="remove" value="Remove" /> <input type="button" id="apply" value="Apply" /><br />
+		<br />
+		-->
+		
+		<h2>License / Download</h2>
+		<p>
+			Fancyform dual licensed under the <a href="http://www.opensource.org/licenses/mit-license.php" target="_BLANK">MIT</a> and <a href="http://www.gnu.org/licenses/gpl.html" target="_BLANK">GPL</a> licenses.<br />
+			<br />
+			<a href="https://github.com/Lutrasoft/Fancyform/blob/master/dev/jquery.fancyform.js">Developers version</a> | <a href="https://github.com/Lutrasoft/Fancyform/blob/master/dev/jquery.fancyform.min.js">Minified version</a><br />
+			<br />
+			Help us keep the projects running.
+		</p>
+
+		<form action="https://www.paypal.com/cgi-bin/webscr" method="post">
+		<input type="hidden" name="cmd" value="_s-xclick">
+		<input type="hidden" name="hosted_button_id" value="PFQABKLCAXF68">
+		<input type="image" src="https://www.paypalobjects.com/nl_NL/NL/i/btn/btn_donate_SM.gif" border="0" name="submit" alt="PayPal, de veilige en complete manier van online betalen.">
+		<img alt="" border="0" src="https://www.paypalobjects.com/nl_NL/i/scr/pixel.gif" width="1" height="1">
+		</form>
+or <br />
+		<a href='http://www.pledgie.com/campaigns/20044'><img alt='Click here to lend your support to: Fancyform and make a donation at www.pledgie.com !' src='http://www.pledgie.com/campaigns/20044.png?skin_name=chrome' border='0' /></a>
+	</div>
+</body>
+</html>

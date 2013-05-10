@@ -1,0 +1,152 @@
+.row
+{
+	clear	: both;
+	overflow	: hidden;	
+}
+.clear
+{
+	clear: both;
+}
+img
+{
+	cursor	: pointer;	
+}
+textarea
+{
+	float	: left;	
+	resize: none;
+	outline: none;
+	border-radius: 3px;
+	border		: 1px solid #cccccc;
+	font-family: Arial;
+	line-height: 18px;
+	padding: 10px;
+}
+#slider
+{
+	float	: left;	
+	margin	: 0 0 0 15px;
+	height	: 200px;
+}
+/*
+	transformSelect CSS
+*/
+.transformSelect
+{
+	clear	: both;
+}
+.transformSelect li
+{
+	position: relative;
+	list-style: none;
+	width: 158px;
+	height: 22px;
+}
+.transformSelect span, .transformSelect input[type=text] {
+	background: #ffffff no-repeat url(../img/transformselect.gif) right top;
+    border: 1px solid #CCCCCC;
+    color: #575757;
+    cursor: pointer;
+    display: block;
+    left: 0;
+    margin: 0;
+    padding: 0 3px;
+    top: 0;
+    line-height: 20px;
+    height: 20px;
+    width: 150px;
+}
+.transformSelect input[type=text]
+{
+	border-right: 0;
+	width: 125px;
+	float: left;
+	background: #ffffff;
+}
+.transformSelect ins
+{  
+	float: right;
+    width: 25px;
+    height: 20px;
+    cursor: pointer;
+    display: block;
+	background: #ffffff no-repeat url(../img/transformselect.gif) right top;
+	border: 1px solid #CCCCCC;
+	border-left: 0;
+}
+.transformSelect ul
+{
+	position: absolute;
+	border: 1px solid #CCCCCC;
+	left: 0;
+	top: 21px;
+	width: 156px;
+}
+.transformSelect ul span
+{
+	border: 0;
+	background: #ffffff;
+}
+.transformSelect ul span:hover
+{
+	background: #dddddd;
+}
+	.transformSelect ul li
+	{
+		height: auto;
+	}
+		.transformSelect li.group ul
+		{
+			position: relative;
+			top: 0;
+			border-left: 0;
+			border-right: 0;
+			border-radius: 0;
+		}
+		.transformSelect li.group span
+		{
+			font-style: italic;
+		}
+		.transformSelect li.group  ul span
+		{
+			text-indent	: 20px;
+			font-style: normal;
+		}
+		
+/* Page CSS */
+*
+{
+	margin	: 0;
+	padding	: 0;	
+	list-style	: none;
+}
+body
+{
+	font : normal 12px Arial;
+	padding: 0 0 30px;
+}
+#container
+{
+	width	: 800px;
+	margin	: 0 auto;
+}
+h1
+{
+	margin	: 30px 0 15px;
+	font-size: 25px;
+}
+h2
+{
+	font-size: 20px;
+	margin: 15px 0;
+}
+p
+{
+	margin	: 15px 0 15px;
+	line-height: 22px;
+	font-size: 14px;
+}
+#changelog
+{
+	display	: none;
+}
