@@ -33,7 +33,7 @@
     "bugs": "https://github.com/Lutrasoft/Fancyform/issues",
     "homepage": "https://github.com/Lutrasoft/Fancyform",
     "docs": "https://github.com/Lutrasoft/Fancyform/wiki",
-    "download": "https://github.com/Lutrasoft/Fancyform",
+    "download": "https://github.com/Lutrasoft/Fancyform/archive/master.zip",
 	"demo" : "http://lutrasoft.nl/jQuery/fancyform/",
     "dependencies": {
         "jquery": ">=1.6"
