@@ -6,7 +6,7 @@
 * 
 * Copyright (c) 2010-2013 - Lutrasoft
 * 
-* Version: 1.3.5
+* Version: 1.3.6
 * Requires: jQuery v1.6.1+ 
 *
 * Dual licensed under the MIT and GPL licenses:
@@ -82,32 +82,7 @@
                 return { start: start, end: end };
             }
         },
-        insertAtCaret: function (myValue) {
-            return this.each(function (i) {
-                if (document.selection) {
-                    //For browsers like Internet Explorer
-                    this.focus();
-                    sel = document.selection.createRange();
-                    sel.text = myValue;
-                    this.focus();
-                }
-                else if (this.selectionStart || this.selectionStart == '0') {
-                    //For browsers like Firefox and Webkit based
-                    var startPos = this.selectionStart,
-						endPos = this.selectionEnd,
-						scrollTop = this.scrollTop;
-                    this.value = this.value.substring(0, startPos) + myValue + this.value.substring(endPos, this.value.length);
-                    this.focus();
-                    this.selectionStart = startPos + myValue.length;
-                    this.selectionEnd = startPos + myValue.length;
-                    this.scrollTop = scrollTop;
-                } else {
-                    this.value += myValue;
-                    this.focus();
-                }
-            })
-        },
-
+		
         /*
         Replace radio buttons with images
         */
@@ -125,8 +100,8 @@
 
             var method = {
                 imageClick: function () {
-                    var name = $(this).prev().attr("name"),
-                        input = $(this).prev();
+                    var input = $(this).prev(),
+						name = input.attr("name");
 
                     if (!input.is(":disabled")) {
                         $("input[name='" + name + "']").prop("checked", false).each(function () {
@@ -160,29 +135,27 @@
                 var _this = $(this);
 
                 // Is already initialized
-                if ($(this).data("transformRadio.initialized") === true) {
-                    return this;
-                }
+                if (!$(this).data("transformRadio.initialized")) {
+					// set initialized
+					// Radio hide
+					$(this)
+						.data("transformRadio.initialized", 1)
+						.hide()
+						.data("options", options);
 
-                // set initialized
-                // Radio hide
-                $(this)
-                    .data("transformRadio.initialized", true)
-                    .hide()
-                    .data("options", options);
+					method.setImage.call(this);
 
-                method.setImage.call(this);
-
-                switch (options.trigger) {
-                    case "parent":
-                        $(this).parent().click(function () {
-                            method.imageClick.call(_this.nextAll("img:first"));
-                        });
-                        break;
-                    case "self":
-                        $(this).nextAll("img:first").click(method.imageClick);
-                        break;
-                }
+					switch (options.trigger) {
+						case "parent":
+							$(this).parent().click(function () {
+								method.imageClick.call(_this.nextAll("img:first"));
+							});
+							break;
+						case "self":
+							$(this).nextAll("img:first").click(method.imageClick);
+							break;
+					}
+				}
             });
         },
         /*
@@ -191,34 +164,32 @@
         transformCheckbox: function (settings) {
 
             var defaults = {
-                checked: "",
-                unchecked: "",
-                disabledChecked: "",
-                disabledUnchecked: "",
-                tristateHalfChecked: "",
-                changeHandler: function (is_checked) { },
-                trigger: "self", // Can be self, parent
-                tristate: false
-            };
-
-            var options = $.extend(defaults, settings);
-
-            var method = {
+					checked: "",
+					unchecked: "",
+					disabledChecked: "",
+					disabledUnchecked: "",
+					tristateHalfChecked: "",
+					changeHandler: function (is_checked) { },
+					trigger: "self", // Can be self, parent
+					tristate: false
+				},
+			options = $.extend(defaults, settings),
+			method = {
                 // Handling the image
                 setImage: function () {
-                    var checkbox = $(this),
-						img = $(this).next(),
-						settings = $(this).data('settings'),
+                    var cb = $(this),
+						img = cb.next(),
+						settings = cb.data('settings'),
 						src;
 
-                    if (checkbox.is(":disabled")) {
-                        src = checkbox.is(":checked") ? "disabledChecked" : "disabledUnchecked";
+                    if (cb.is(":disabled")) {
+                        src = cb.is(":checked") ? "disabledChecked" : "disabledUnchecked";
                     }
-                    else if (checkbox.hasClass("half-checked")) // Tri-state image
+                    else if (cb.hasClass("half-checked")) // Tri-state image
                     {
                         src = "tristateHalfChecked";
                     }
-                    else if (checkbox.is(":checked")) {
+                    else if (cb.is(":checked")) {
                         src = "checked";
                     }
                     else {
@@ -232,16 +203,16 @@
                 },
                 // Handling the check/uncheck/disable/enable functions
                 uncheck: function () {
-                    method.setProp(this, "checked", false);
+                    method.setProp(this, "checked", 0);
                 },
                 check: function () {
-                    method.setProp(this, "checked", true);
+                    method.setProp(this, "checked", 1);
                 },
                 disable: function () {
-                    method.setProp(this, "disabled", true);
+                    method.setProp(this, "disabled", 1);
                 },
                 enable: function () {
-                    method.setProp(this, "disabled", false);
+                    method.setProp(this, "disabled", 0);
                 },
                 // Clicking the image
                 imageClick: function () {
@@ -251,38 +222,39 @@
                     }
                     else if (prev.is(":checked")) {
                         method.uncheck.call(prev);
-                        options.changeHandler.call(prev, true);
+                        options.changeHandler.call(prev, 1);
                     }
                     else {
                         method.check.call(prev);
-                        options.changeHandler.call(prev, false);
+                        options.changeHandler.call(prev, 0);
                     }
                     method.handleTriState.call(prev);
                 },
                 // Tristate
                 handleTriState: function () {
-                    var checkbox = $(this),
-						settings = $(this).data('settings'),
-						li = checkbox.parent(),
-						ul = li.find("ul");
+                    var cb = $(this),
+						settings = cb.data('settings'),
+						li = cb.parent(),
+						ul = li.find("ul"),
+						pli = li.closest("li");
 
                     if (!settings.tristate) return;
 
                     // Fix children
-                    if (checkbox.hasClass("half-checked") || checkbox.is(":checked")) {
-                        checkbox.removeClass("half-checked");
-                        method.check.call(checkbox);
+                    if (cb.hasClass("half-checked") || cb.is(":checked")) {
+                        cb.removeClass("half-checked");
+                        method.check.call(cb);
                         ul.find("input:checkbox").each(method.check);
                     }
-                    else if (checkbox.not(":checked")) {
-                        checkbox.removeClass("half-checked");
+                    else if (cb.not(":checked")) {
+                        cb.removeClass("half-checked");
                         ul.find("input:checkbox").each(method.uncheck);
                     }
-                    method.setImage.call(checkbox);
+                    method.setImage.call(cb);
 
                     // Fix parents
-                    if (checkbox.parent().parent().parent().is("li")) {
-                        method.handleTriStateLevel.call(checkbox.parent().parent().parent());
+                    if (cb.parent().parent().parent().is("li")) {
+                        method.handleTriStateLevel.call(cb.parent().parent().parent());
                     }
 
                     $(this).trigger("transformCheckbox.tristate");
@@ -321,31 +293,29 @@
                     var _this = $(this);
 
                     // Is already initialized
-                    if ($(this).data("transformCheckbox.initialized") === true) {
-                        return this;
-                    }
+                    if (!$(this).data("transformCheckbox.initialized")) {
+						// set initialized
+						$(this).data("transformCheckbox.initialized", 1)
+							   .data("settings", options);
 
-                    // set initialized
-                    $(this).data("transformCheckbox.initialized", true)
-                           .data("settings", options);
+						// Radio hide
+						$(this).hide();
 
-                    // Radio hide
-                    $(this).hide();
+						// Afbeelding
+						$(this).after("<img src='' />");
+						method.setImage.call(this);
 
-                    // Afbeelding
-                    $(this).after("<img src='' />");
-                    method.setImage.call(this);
-
-                    switch (options.trigger) {
-                        case "parent":
-                            $(this).parent().click(function () {
-                                method.imageClick.call(_this.nextAll("img:first"));
-                            });
-                            break;
-                        case "self":
-                            $(this).next("img:first").click(method.imageClick);
-                            break;
-                    }
+						switch (options.trigger) {
+							case "parent":
+								$(this).parent().click(function () {
+									method.imageClick.call(_this.nextAll("img:first"));
+								});
+								break;
+							case "self":
+								$(this).next("img:first").click(method.imageClick);
+								break;
+						}
+					}
                 }
             });
         },
@@ -810,7 +780,7 @@
                     $(this).data("settings", options);
 
                     // set initialized
-                    $(this).data("transformSelect.initialized", true);
+                    $(this).data("transformSelect.initialized", 1);
 
                     // Call init functions
                     method.init.call(this);
@@ -986,8 +956,8 @@
 				    // Mousewheel
 				    mousewheel: function (e, delta) {
 				        e.preventDefault();
-				        var lineHeight = $(this).css("line-height");
-				        var scrollTo = $(this)[0].scrollTop + (parseFloat(lineHeight) * (delta * -1));
+				        var lineHeight = $(this).css("line-height"),
+							scrollTo = $(this)[0].scrollTop + (parseFloat(lineHeight) * (delta * -1));
 				        method.scrollToPx.call(this, scrollTo);
 				    },
 				    // Used to scroll 
@@ -1052,13 +1022,14 @@
 				    // Check the old and new height if it needs to scroll
 				    checkScroll: function (key) {
 				        // Scroll if needed
-				        var src = $(this);
-				        var tar = $(this).next("." + settings.hiddenTextareaClass);
+				        var src = $(this),
+							tar = src.next("." + settings.hiddenTextareaClass),
 
 				        // Put into the div to check new height
-				        var caretStart = src.caret().start;
-				        var textBefore = src.val().substr(0, caretStart);
-				        var textAfter = src.val().substr(caretStart, src.val().length);
+							caretStart = src.caret().start,
+							v = src.val(),
+							textBefore = v.substr(0, caretStart),
+							textAfter = v.substr(caretStart, v.length);
 
 				        method.toDiv.call(this, true, textBefore, textAfter);
 
@@ -1079,28 +1050,28 @@
 
 				    // Place the value of the textarea into the DIV
 				    toDiv: function (setHeight, html, textAfter) {
-				        var src = $(this);
-				        var tar = $(this).next("." + settings.hiddenTextareaClass);
-				        var regEnter = /\n/g;
-				        var regSpace = /\s\s/g;
-				        var regSingleSpace = /\s/g;
-				        var res = src.val();
-				        var appendEnter = false;
-				        var appendEnterSpace = false;
+				        var src = $(this),
+							tar = src.next("." + settings.hiddenTextareaClass),
+							regEnter = /\n/g,
+							regSpace = /\s\s/g,
+							regSingleSpace = /\s/g,
+							res = src.val(),
+							appendEnter = 0,
+							appendEnterSpace = 0;
 				        if (html)
 				            res = html;
 
 				        // If last key is enter
 				        // 		or last key is space, and key before that was enter, then add enter
 				        if (regEnter.test(res.substring(res.length - 1, res.length))) {
-				            appendEnter = true;
+				            appendEnter = 1;
 				        }
 
 				        if (
 								regEnter.test(res.substring(res.length - 2, res.length - 1)) &&
 								regSingleSpace.test(res.substring(res.length - 1, res.length))
 							) {
-				            appendEnterSpace = true;
+				            appendEnterSpace = 1;
 				        }
 
 				        // Set old and new height + set the content
@@ -1163,7 +1134,7 @@
 				    },
 				    scrollCallBack: function () {
 				        var maxScroll = parseFloat($(this)[0].scrollHeight) - $(this).height(),
-							percentage = (parseFloat($(this)[0].scrollTop) / maxScroll * 100);
+							percentage = parseFloat($(this)[0].scrollTop) / maxScroll * 100;
 				        percentage = percentage > 100 ? 100 : percentage;
 				        percentage = percentage < 0 ? 0 : percentage;
 				        percentage = isNaN(percentage) ? 100 : percentage;

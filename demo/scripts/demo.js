@@ -16,9 +16,15 @@ $(function(){
 		Transform a checkbox
 		================			
 	*/
-	$("input:checkbox").transformCheckbox({
+	$("input:checkbox:not(.tri)").transformCheckbox({
 		checked : "img/chk_on.png",
 		unchecked : "img/chk_off.png"	
+	});
+	$("input.tri:checkbox").transformCheckbox({
+		checked : "img/chk_on.png",
+		unchecked : "img/chk_off.png",
+		tristateHalfChecked : "img/chk_tri.png",
+		tristate : true
 	});
 	
 	/*

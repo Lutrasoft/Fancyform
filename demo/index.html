@@ -72,6 +72,43 @@
 	tristate : false // Use tri state? need to be ul > li > checkbox // ul > li > ul > li > checkbox
 });</pre>
 		
+		<h3>Tri-State</h3>
+		<ul id="tristate">
+			<li><input type="checkbox" class="tri" /> Main
+				<ul>
+					<li><input type="checkbox" class="tri" /> Sub
+						<ul>
+							<li><input type="checkbox" class="tri" /> Subsub</li>
+							<li><input type="checkbox" class="tri" /> Subsub</li>
+						</ul>
+					</li>
+					<li><input type="checkbox" class="tri" /> Sub
+						<ul>
+							<li><input type="checkbox" class="tri" /> SubSub</li>
+							<li><input type="checkbox" class="tri" /> SubSub</li>
+						</ul>
+					</li>
+				</ul>
+			</li>
+			<li><input type="checkbox" class="tri" /> Main
+				<ul>
+					<li><input type="checkbox" class="tri" /> Sub</li>
+					<li><input type="checkbox" class="tri" /> Sub
+						<ul>
+							<li><input type="checkbox" class="tri" /> SubSub</li>
+							<li><input type="checkbox" class="tri" /> SubSub</li>
+						</ul>
+					</li>
+				</ul>
+			</li>
+		</ul>
+		<pre class="prettyprint">$("input:checkbox").transformCheckbox({
+			checked: "/images/content/filterBoxCheckboxChecked.jpg", // Checked image
+			unchecked: "/images/content/filterBoxCheckbox.jpg",		// Unchecked image
+			tristateHalfChecked : "/images/content/filterBoxCheckboxDisabledUnChecked.jpg", // Tri-state image
+			tristate : true // Use tri state? need to be ul > li > checkbox // ul > li > ul > li > checkbox
+		});</pre>
+		
 		<h2>Select (dropdown list)</h2>
 		<p>
 			The SELECT will be changed into a UL list, it is possible to use the default SELECT, OPTION and OPTGROUP to transform it into something you want.

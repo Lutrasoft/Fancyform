@@ -150,3 +150,8 @@ p
 {
 	display	: none;
 }
+#tristate li
+{
+	margin: 0 0 0 20px;
+	list-style: disc;
+}
