@@ -2,7 +2,7 @@
 * Fancyform - jQuery Plugin
 * Simple and fancy form styling alternative
 *
-* Examples and documentation at: http://www.lutrasoft.nl/jQuery/fancyform/
+* Examples and documentation at: https://github.com/Lutrasoft/Fancyform
 * 
 * Copyright (c) 2010-2013 - Lutrasoft
 * 
@@ -96,9 +96,9 @@
                 trigger: "self" // Can be self or parent
             };
 
-            var options = $.extend(defaults, options);
+            var options = $.extend(defaults, options),
 
-            var method = {
+			method = {
                 imageClick: function () {
                     var input = $(this).prev(),
 						name = input.attr("name");
@@ -135,10 +135,10 @@
                 var _this = $(this);
 
                 // Is already initialized
-                if (!$(this).data("transformRadio.initialized")) {
+                if (!_this.data("transformRadio.initialized")) {
 					// set initialized
 					// Radio hide
-					$(this)
+					_this
 						.data("transformRadio.initialized", 1)
 						.hide()
 						.data("options", options);
@@ -147,12 +147,12 @@
 
 					switch (options.trigger) {
 						case "parent":
-							$(this).parent().click(function () {
+							_this.parent().click(function () {
 								method.imageClick.call(_this.nextAll("img:first"));
 							});
 							break;
 						case "self":
-							$(this).nextAll("img:first").click(method.imageClick);
+							_this.nextAll("img:first").click(method.imageClick);
 							break;
 					}
 				}
@@ -217,18 +217,17 @@
                 // Clicking the image
                 imageClick: function () {
                     var prev = $(this).prev();
-                    if (prev.is(":disabled")) {
-                        return;
+                    if (!prev.is(":disabled")) {
+                        if (prev.is(":checked")) {
+							method.uncheck.call(prev);
+							options.changeHandler.call(prev, 1);
+						}
+						else {
+							method.check.call(prev);
+							options.changeHandler.call(prev, 0);
+						}
+						method.handleTriState.call(prev);
                     }
-                    else if (prev.is(":checked")) {
-                        method.uncheck.call(prev);
-                        options.changeHandler.call(prev, 1);
-                    }
-                    else {
-                        method.check.call(prev);
-                        options.changeHandler.call(prev, 0);
-                    }
-                    method.handleTriState.call(prev);
                 },
                 // Tristate
                 handleTriState: function () {
@@ -238,31 +237,33 @@
 						ul = li.find("ul"),
 						pli = li.closest("li");
 
-                    if (!settings.tristate) return;
+                    if (settings.tristate)
+					{
+						// Fix children
+						if (cb.hasClass("half-checked") || cb.is(":checked")) {
+							cb.removeClass("half-checked");
+							method.check.call(cb);
+							ul.find("input:checkbox").each(method.check);
+						}
+						else if (cb.not(":checked")) {
+							cb.removeClass("half-checked");
+							ul.find("input:checkbox").each(method.uncheck);
+						}
+						method.setImage.call(cb);
 
-                    // Fix children
-                    if (cb.hasClass("half-checked") || cb.is(":checked")) {
-                        cb.removeClass("half-checked");
-                        method.check.call(cb);
-                        ul.find("input:checkbox").each(method.check);
-                    }
-                    else if (cb.not(":checked")) {
-                        cb.removeClass("half-checked");
-                        ul.find("input:checkbox").each(method.uncheck);
-                    }
-                    method.setImage.call(cb);
+						// Fix parents
+						if (cb.parent().parent().parent().is("li")) {
+							method.handleTriStateLevel.call(cb.parent().parent().parent());
+						}
 
-                    // Fix parents
-                    if (cb.parent().parent().parent().is("li")) {
-                        method.handleTriStateLevel.call(cb.parent().parent().parent());
-                    }
-
-                    $(this).trigger("transformCheckbox.tristate");
+						cb.trigger("transformCheckbox.tristate");
+					}
                 },
                 // Handle all including parent levels
                 handleTriStateLevel: function () {
-                    var firstCheckbox = $(this).find("input:checkbox").first(),
-						ul = $(this).find("ul"),
+                    var _this = $(this),
+						firstCheckbox = _this.find("input:checkbox").first(),
+						ul = _this.find("ul"),
 						inputs = ul.find("input:checkbox"),
 						checked = inputs.filter(":checked");
 
@@ -279,8 +280,8 @@
                     }
                     method.setImage.call(firstCheckbox);
 
-                    if ($(this).parent().parent().is("li")) {
-                        method.handleTriStateLevel.call($(this).parent().parent());
+                    if (_this.parent().parent().is("li")) {
+                        method.handleTriStateLevel.call(_this.parent().parent());
                     }
                 }
             }
@@ -293,26 +294,26 @@
                     var _this = $(this);
 
                     // Is already initialized
-                    if (!$(this).data("transformCheckbox.initialized")) {
+                    if (!_this.data("transformCheckbox.initialized")) {
 						// set initialized
-						$(this).data("transformCheckbox.initialized", 1)
+						_this.data("transformCheckbox.initialized", 1)
 							   .data("settings", options);
 
 						// Radio hide
-						$(this).hide();
+						_this.hide();
 
 						// Afbeelding
-						$(this).after("<img src='' />");
+						_this.after("<img src='' />");
 						method.setImage.call(this);
 
 						switch (options.trigger) {
 							case "parent":
-								$(this).parent().click(function () {
+								_this.parent().click(function () {
 									method.imageClick.call(_this.nextAll("img:first"));
 								});
 								break;
 							case "self":
-								$(this).next("img:first").click(method.imageClick);
+								_this.next("img:first").click(method.imageClick);
 								break;
 						}
 					}
@@ -335,10 +336,10 @@
         transformSelect: function (opts) {
             var defaults = {
                 dropDownClass: "transformSelect",
-                showFirstItemInDrop: true,
+                showFirstItemInDrop: 1,
 
-                acceptManualInput: false,
-                useManualInputAsFilter: false,
+                acceptManualInput: 0,
+                useManualInputAsFilter: 0,
 
                 subTemplate: function (option) {
                     if ($(this)[0].type == "select-multiple") {
@@ -353,40 +354,40 @@
                 valueTemplate: function () { return $(this).text(); },
 
                 ellipsisLength: null,
-                addDropdownToBody: false
+                addDropdownToBody: 0
             };
 
-            var options = $(this).data("settings");
-
-            var method = {
+            var options = $(this).data("settings"),
+			method = {
                 init: function () {
-                    // Hide mezelf
-                    $(this).hide();
-
                     // Generate HTML
                     var selectedIndex = -1,
                         selectedOption = null,
-                        _this = this;
+                        _this = this,
+						t = $(_this);
 
-                    if ($(this).find("option:selected").length > 0 && $(this)[0].type != "select-multiple") {
-                        selectedOption = $(this).find("option:selected");
-                        selectedIndex = $(this).find("option").index(selectedOption);
+					// Hide mezelf
+                    t.hide();
+					
+                    if (t.find("option:selected").length > 0 && _this.type != "select-multiple") {
+                        selectedOption = t.find("option:selected");
+                        selectedIndex = t.find("option").index(selectedOption);
                     }
                     else {
                         selectedIndex = 0;
-                        selectedOption = $(this).find("option:first");
+                        selectedOption = t.find("option:first");
                     }
 
                     // Maak een ul aan
                     var ul = "<ul class='" + options.dropDownClass + " trans-element'><li>";
 
                     if (options.acceptManualInput && !$.isTouchDevice()) {
-                        var value = $(this).data("value") ? $(this).data("value") : options.initValue.call(selectedOption);
-                        ul += "<ins></ins><input type='text' name='" + $(this).attr("name").replace("_backup", "") + "' value='" + value + "' />";
+                        var value = t.data("value") ? t.data("value") : options.initValue.call(selectedOption);
+                        ul += "<ins></ins><input type='text' name='" + t.attr("name").replace("_backup", "") + "' value='" + value + "' />";
 
                         // Save old select
-                        if ($(this).attr("name").indexOf("_backup") == -1) {
-                            $(this).attr("name", $(this).attr("name") + "_backup");
+                        if (t.attr("name").indexOf("_backup") == -1) {
+                            t.attr("name", t.attr("name") + "_backup");
                         }
                     }
                     else {
@@ -400,13 +401,13 @@
 
                     ul += "<ul style='display: none;'>";
 
-                    $(this).children().each(function (i) {
+                    t.children().each(function (i) {
                         if (!i && !options.showFirstItemInDrop) {
                             // Don't do anything when you don't wanna show the first element
                         }
                         else {
                             ul += method[
-								$(this)[0].tagName == "OPTION" ? "getLIOptionChild" : "getLIOptgroupChildren"
+								this.tagName == "OPTION" ? "getLIOptionChild" : "getLIOptgroupChildren"
 							].call(_this, this);
                         }
                     });
@@ -416,16 +417,16 @@
                     var $ul = $(ul),
 						$lis = $ul.find("ul li:not(.group)"),
 						$inp = $ul.find("input");
-                    $(this).after($ul);
+                    t.after($ul);
 
                     // Bind handlers
-                    if ($(this).is(":disabled")) {
-                        method.disabled.call(this, true);
+                    if (t.is(":disabled")) {
+                        method.disabled.call(_this, true);
                     }
 
-                    if ($(this)[0].type == "select-multiple" && !$.isTouchDevice()) {
-                        if ($(this).attr("name") && $(this).attr("name").indexOf("_backup") == -1) {
-                            $(this).attr("name", $(this).attr("name") + "_backup");
+                    if (_this.type == "select-multiple" && !$.isTouchDevice()) {
+                        if (t.attr("name") && t.attr("name").indexOf("_backup") == -1) {
+                            t.attr("name", t.attr("name") + "_backup");
                         }
                         $lis.click(method.selectCheckbox);
                     }
@@ -434,8 +435,8 @@
 
                         $inp.click(method.openDrop)
                     				.keydown(function (e) {
-                    				    var ar = [9, 13]; // Tab or enter
-                    				    if ($.inArray(e.which, ar) != -1)
+                    				    // Tab or enter
+                    				    if ($.inArray(e.which, [9, 13]) != -1)
                     				        method.closeAllDropdowns();
                     				})
                                     .prev("ins")
@@ -460,7 +461,7 @@
                     $("html").unbind("click.transformSelect").bind("click.transformSelect", method.closeDropDowns)                    // Bind hotkeys
 
                     if ($.hotkeys && !$("body").data("trans-element-select")) {
-                        $("body").data("trans-element-select", true);
+                        $("body").data("trans-element-select", 1);
 
                         $(document)
                             .bind("keydown", "up", function (e) {
@@ -497,10 +498,9 @@
                     // Gebruik native selects
                     if ($.isTouchDevice()) {
                         if (!options.showFirstItemInDrop) {
-                            $(this).find("option:first").remove();
+                            t.find("option:first").remove();
                         }
-                        $(this)
-                            .appendTo($ul.find("li:first"))
+                        t	.appendTo($ul.find("li:first"))
                             .show()
                             .css({
                                 opacity: 0,
@@ -513,7 +513,7 @@
                         $ul.find("li:first").css({
                             position: "relative"
                         });
-                        $(this).change(method.mobileChange);
+                        t.change(method.mobileChange);
                     }
                 },
                 getUL: function () {
@@ -563,7 +563,7 @@
                             return $(this).text() == select.find("option").eq(index).text();
                         }).first().trigger("click");
                     }
-                    catch (err) { }
+                    catch (e) { }
                 },
                 selectValue: function (value) {
                     var select = $(this),
@@ -875,12 +875,12 @@
 
             return this.each(function (i) {
                 // Is already initialized
-                if ($(this).data("transformFile.initialized") === true) {
+                if ($(this).data("transformFile.initialized")) {
                     return this;
                 }
 
                 // set initialized
-                $(this).data("transformFile.initialized", true);
+                $(this).data("transformFile.initialized", 1);
 
                 // 
                 var el = $(this).hide(),
@@ -918,26 +918,28 @@
 				method = {
 				    // Init the module
 				    init: function () {
+						var _this = $(this);
+						
 				        // This only happens in IE
-				        if ($(this).css("line-height") == "normal") {
-				            $(this).css("line-height", "12px");
+				        if (_this.css("line-height") == "normal") {
+				            _this.css("line-height", "12px");
 				        }
 
 				        // Set the CSS
 				        var CSS = {
-				            'line-height': $(this).css("line-height"),
-				            'font-family': $(this).css("font-family"),
-				            'font-size': $(this).css("font-size"),
+				            'line-height': _this.css("line-height"),
+				            'font-family': _this.css("font-family"),
+				            'font-size': _this.css("font-size"),
 				            "border": "1px solid black",
-				            "width": $(this).width(),
-				            "letter-spacing": $(this).css("letter-spacing"),
-				            "text-indent": $(this).css("text-indent"),
-				            "padding": $(this).css("padding"),
+				            "width": _this.width(),
+				            "letter-spacing": _this.css("letter-spacing"),
+				            "text-indent": _this.css("text-indent"),
+				            "padding": _this.css("padding"),
 				            "overflow": "hidden",
-				            "white-space": $(this).css("white-space")
+				            "white-space": _this.css("white-space")
 				        };
 
-				        $(this)
+				        _this
 				        // Add a new textarea
 								.css(CSS)
 								.keyup(method.keyup)
@@ -948,7 +950,7 @@
 								.next()
 								.addClass(settings.hiddenTextareaClass)
 								.css(CSS)
-								.css("width", $(this).width() - 5)	// Minus 5 because there is some none typeable padding?
+								.css("width", _this.width() - 5)	// Minus 5 because there is some none typeable padding?
 								.hide()
 
 				    },
@@ -969,8 +971,7 @@
 				        37, 38, 39, 40  = Arrow keys (L,U,R,D)
 				        13				= Enter
 				        */
-				        var ignore = [37, 38, 39, 40];
-				        if ($.inArray(e.which, ignore) != -1) {
+				        if ($.inArray(e.which, [37, 38, 39, 40]) >= 0) {
 				            method.checkCaretScroll.call(this);
 				        }
 				        else {
@@ -983,40 +984,41 @@
 				    Check cursor position to scroll
 				    */
 				    checkCaretScroll: function () {
-				        var src = $(this);
-				        var caretStart = src.caret().start;
-				        var textBefore = src.val().substr(0, caretStart);
-				        var textAfter = src.val().substr(caretStart, src.val().length);
-				        var tar = src.next("." + settings.hiddenTextareaClass);
-				        var vScroll = null;
+				        var src = $(this),
+							caretStart = src.caret().start,
+							val = src.val(),
+							sTop = src.scrollTop(),
+							lHeight = parseInt(src.css("line-height")),
+							textBefore = val.substr(0, caretStart),
+							textAfter = val.substr(caretStart),
+							tar = src.next("." + settings.hiddenTextareaClass),
+							vScroll;
 
 				        // First or last element (don't do anything)
-				        if (!caretStart || caretStart == 0) {
-				            return false;
-				        }
+				        if ( caretStart ) {
+							// Also pick the first char of a row
+							if (val.substr(caretStart - 1, 1) == '\n') {
+								textBefore = val.substr(0, caretStart + 1);
+							}
 
-				        // Also pick the first char of a row
-				        if (src.val().substr(caretStart - 1, 1) == '\n') {
-				            textBefore = src.val().substr(0, caretStart + 1);
-				        }
+							method.toDiv.call(this, false, textBefore, textAfter);
 
-				        method.toDiv.call(this, false, textBefore, textAfter);
+							// If you go through the bottom
+							if (tar.height() > (src.height() + sTop)) {
+								vScroll = sTop + lHeight;
+							}
+							// if you go through the top
+							else if (tar.height() <= sTop) {
+								vScroll = sTop - lHeight;
+							}
 
-				        // If you go through the bottom
-				        if (tar.height() > (src.height() + src.scrollTop())) {
-				            vScroll = src.scrollTop() + parseInt(src.css("line-height"));
-				        }
-				        // if you go through the top
-				        else if (tar.height() <= src.scrollTop()) {
-				            vScroll = src.scrollTop() - parseInt(src.css("line-height"));
-				        }
-
-				        // Scroll the px
-				        if (vScroll) {
-				            method.scrollToPx.call(this,
-													vScroll
-												);
-				        }
+							// Scroll the px
+							if (vScroll) {
+								method.scrollToPx.call(this,
+														vScroll
+													);
+							}
+						}
 				    },
 
 				    // Check the old and new height if it needs to scroll
@@ -1029,7 +1031,7 @@
 							caretStart = src.caret().start,
 							v = src.val(),
 							textBefore = v.substr(0, caretStart),
-							textAfter = v.substr(caretStart, v.length);
+							textAfter = v.substr(caretStart);
 
 				        method.toDiv.call(this, true, textBefore, textAfter);
 
@@ -1063,13 +1065,13 @@
 
 				        // If last key is enter
 				        // 		or last key is space, and key before that was enter, then add enter
-				        if (regEnter.test(res.substring(res.length - 1, res.length))) {
+				        if (regEnter.test(res.substring(res.length - 1))) {
 				            appendEnter = 1;
 				        }
 
 				        if (
 								regEnter.test(res.substring(res.length - 2, res.length - 1)) &&
-								regSingleSpace.test(res.substring(res.length - 1, res.length))
+								regSingleSpace.test(res.substring(res.length - 1))
 							) {
 				            appendEnterSpace = 1;
 				        }
@@ -1078,13 +1080,13 @@
 				        if (setHeight)
 				            tar.data("old-height", tar.height());
 
-				        res = res.replace(regEnter, "<br>"); // No space or it will be replaced by the function below
-				        res = res.replace(regSpace, "&nbsp; ");
-				        res = res.replace(regSpace, "&nbsp; "); // 2x because 1x can result in: &nbsp;(space)(space) and that is not seen within the div
-				        res = res.replace(/<br>/ig, '<br />');
+				        res = res	.replace(regEnter, "<br>") // No space or it will be replaced by the function below
+									.replace(regSpace, "&nbsp; ")
+									.replace(regSpace, "&nbsp; ") // 2x because 1x can result in: &nbsp;(space)(space) and that is not seen within the div
+									.replace(/<br>/ig, '<br />');
 				        tar.html(res);
 
-				        if ((appendEnter || appendEnterSpace) && $.trim(textAfter) == "") {
+				        if ((appendEnter || appendEnterSpace) && $.trim(textAfter)) {
 				            if (appendEnterSpace && $.browser.msie)
 				                tar.append("<br />");
 				            tar.append("<br />");
