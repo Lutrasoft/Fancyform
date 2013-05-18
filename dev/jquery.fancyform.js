@@ -6,7 +6,7 @@
 * 
 * Copyright (c) 2010-2013 - Lutrasoft
 * 
-* Version: 1.3.7
+* Version: 1.3.8
 * Requires: jQuery v1.6.1+ 
 *
 * Dual licensed under the MIT and GPL licenses:
@@ -14,14 +14,12 @@
 *   http://www.gnu.org/licenses/gpl.html
 */
 (function ($) {
-    $.simpleEllipsis = function (totalTxt, maxchars) {
-        return totalTxt.length < maxchars ? totalTxt : totalTxt.substring(0, maxchars) + "...";
+    $.simpleEllipsis = function (t, c) {
+        return t.length < c ? t : t.substring(0, c) + "...";
     }
 
-    $.isTouchDevice = function () {
-        return !!('ontouchstart' in window);
-    };
-
+	var _touch = !!('ontouchstart' in window);
+	
     $.fn.extend({
         /*
         Get the caret on an textarea
@@ -57,12 +55,12 @@
                 }
                 // set caret range
                 else {
-                    if (typeof start != "number") start = -1;
                     if (typeof end != "number") end = -1;
-                    if (start < 0) start = 0;
+                    if (typeof start != "number" || start < 0) start = 0;
                     if (end > val.length) end = val.length;
-                    if (end < start) end = start;
-                    if (start > end) start = end;
+					
+                    end = Math.max(start, end);
+                    start = Math.min(start, end);
 
                     elem.focus();
 
@@ -104,29 +102,31 @@
 						name = input.attr("name");
 
                     if (!input.is(":disabled")) {
-                        $("input[name='" + name + "']").prop("checked", false).each(function () {
+                        $("input[name='" + name + "']").prop("checked", 0).each(function () {
                             method.setImage.call(this);
                         });
 
                         input
-                            .prop("checked", true)
+                            .prop("checked", 1)
                             .change();
 
                         method.setImage.call(input);
                     }
                 },
                 setImage: function () {
-                    var options = $(this).data("options");
+                    var _this = $(this),
+						dis = _this.is(":disabled"),
+						options = _this.data("options");
 
-                    if (!$(this).next().is("img")) {
-                        $(this).after("<img />");
+                    if (!_this.next().is("img")) {
+                        _this.after("<img />");
                     }
 
-                    $(this).next("img")
+                    _this.next("img")
 								.attr("src", options[
-									$(this).is(":checked") ?
-									($(this).is(":disabled") ? "disabledChecked" : "checked") :
-									($(this).is(":disabled") ? "disabledUnchecked" : "unchecked")
+									_this.is(":checked") ?
+									(dis ? "disabledChecked" : "checked") :
+									(dis ? "disabledUnchecked" : "unchecked")
 								]);
                 }
             };
@@ -135,11 +135,11 @@
                 var _this = $(this);
 
                 // Is already initialized
-                if (!_this.data("transformRadio.initialized")) {
+                if (!_this.data("tfr.init")) {
 					// set initialized
 					// Radio hide
 					_this
-						.data("transformRadio.initialized", 1)
+						.data("tfr.init", 1)
 						.hide()
 						.data("options", options);
 
@@ -171,7 +171,7 @@
 					tristateHalfChecked: "",
 					changeHandler: function (is_checked) { },
 					trigger: "self", // Can be self, parent
-					tristate: false
+					tristate: 0
 				},
 			options = $.extend(defaults, settings),
 			method = {
@@ -294,16 +294,16 @@
                     var _this = $(this);
 
                     // Is already initialized
-                    if (!_this.data("transformCheckbox.initialized")) {
+                    if (!_this.data("tfc.init")) {
 						// set initialized
-						_this.data("transformCheckbox.initialized", 1)
+						_this.data("tfc.init", 1)
 							   .data("settings", options);
 
 						// Radio hide
 						_this.hide();
 
 						// Afbeelding
-						_this.after("<img src='' />");
+						_this.after("<img />");
 						method.setImage.call(this);
 
 						switch (options.trigger) {
@@ -313,7 +313,7 @@
 								});
 								break;
 							case "self":
-								_this.next("img:first").click(method.imageClick);
+								_this.next("img").click(method.imageClick);
 								break;
 						}
 					}
@@ -361,32 +361,28 @@
 			method = {
                 init: function () {
                     // Generate HTML
-                    var selectedIndex = -1,
-                        selectedOption = null,
-                        _this = this,
-						t = $(_this);
+                    var _this = this,
+						t = $(_this),
+						selectedIndex = 0,
+                        selectedOption = t.find("option:first");
 
 					// Hide mezelf
                     t.hide();
 					
-                    if (t.find("option:selected").length > 0 && _this.type != "select-multiple") {
+                    if (t.find("option:selected").length && _this.type != "select-multiple") {
                         selectedOption = t.find("option:selected");
                         selectedIndex = t.find("option").index(selectedOption);
-                    }
-                    else {
-                        selectedIndex = 0;
-                        selectedOption = t.find("option:first");
                     }
 
                     // Maak een ul aan
                     var ul = "<ul class='" + options.dropDownClass + " trans-element'><li>";
 
-                    if (options.acceptManualInput && !$.isTouchDevice()) {
-                        var value = t.data("value") ? t.data("value") : options.initValue.call(selectedOption);
+                    if (options.acceptManualInput && !_touch) {
+                        var value = t.data("value") || options.initValue.call(selectedOption);
                         ul += "<ins></ins><input type='text' name='" + t.attr("name").replace("_backup", "") + "' value='" + value + "' />";
 
                         // Save old select
-                        if (t.attr("name").indexOf("_backup") == -1) {
+                        if (t.attr("name").indexOf("_backup") < 0) {
                             t.attr("name", t.attr("name") + "_backup");
                         }
                     }
@@ -421,10 +417,10 @@
 
                     // Bind handlers
                     if (t.is(":disabled")) {
-                        method.disabled.call(_this, true);
+                        method.disabled.call(_this, 1);
                     }
 
-                    if (_this.type == "select-multiple" && !$.isTouchDevice()) {
+                    if (_this.type == "select-multiple" && !_touch) {
                         if (t.attr("name") && t.attr("name").indexOf("_backup") == -1) {
                             t.attr("name", t.attr("name") + "_backup");
                         }
@@ -436,7 +432,7 @@
                         $inp.click(method.openDrop)
                     				.keydown(function (e) {
                     				    // Tab or enter
-                    				    if ($.inArray(e.which, [9, 13]) != -1)
+                    				    if ($.inArray(e.which, [9, 13]) >= 0)
                     				        method.closeAllDropdowns();
                     				})
                                     .prev("ins")
@@ -447,7 +443,7 @@
                         $inp.keyup(method.filterByInput);
                     }
 
-                    $ul.find("span").eq(0).click(method.openDrop);
+                    $ul.find("span:first").click(method.openDrop);
 
                     // Set data if we use addDropdownToBody option
                     $ul.find("ul:first").data("trans-element", $ul).addClass("transformSelectDropdown");
@@ -467,7 +463,7 @@
                             .bind("keydown", "up", function (e) {
                                 var ul = $(".trans-focused"), select, selectedIndex;
                                 // Only enable on trans-element without input
-                                if (!ul.length || ul.find("input").length) return false;
+                                if (!ul.length || ul.find("input").length) return 0;
                                 select = ul.prevAll("select").first();
 
                                 selectedIndex = select[0].selectedIndex - 1
@@ -477,12 +473,12 @@
 
                                 method.selectIndex.call(select, selectedIndex);
 
-                                return false;
+                                return 0;
                             })
                             .bind("keydown", "down", function (e) {
                                 var ul = $(".trans-focused"), select, selectedIndex;
                                 // Only enable on trans-element without input
-                                if (!ul.length || ul.find("input").length) return false;
+                                if (!ul.length || ul.find("input").length) return 0;
                                 select = ul.prevAll("select").first();
 
                                 selectedIndex = select[0].selectedIndex + 1
@@ -491,12 +487,12 @@
                                 }
 
                                 method.selectIndex.call(select, selectedIndex);
-                                return false;
+                                return 0;
                             });
                     }
 
                     // Gebruik native selects
-                    if ($.isTouchDevice()) {
+                    if (_touch) {
                         if (!options.showFirstItemInDrop) {
                             t.find("option:first").remove();
                         }
@@ -517,10 +513,10 @@
                     }
                 },
                 getUL: function () {
-                    return $.isTouchDevice() ? $(this).closest("ul") : $(this).next(".trans-element:first");
+                    return _touch ? $(this).closest("ul") : $(this).next(".trans-element:first");
                 },
                 getSelect: function ($ul) {
-                    return $.isTouchDevice() ? $ul.find("select") : $ul.prevAll("select:first");
+                    return _touch ? $ul.find("select") : $ul.prevAll("select:first");
                 },
                 disabled: function (disabled) {
                     method.getUL.call(this)[disabled ? "addClass" : "removeClass"]("disabled");
@@ -533,8 +529,9 @@
                     method.init.call(this);
                 },
                 filterByInput: function () {
-                    var val = $(this).val().toLowerCase(),
-                        ul = $(this).closest("ul"),
+                    var _this = $(this),
+						val = _this.val().toLowerCase(),
+                        ul = _this.closest("ul"),
                         drop = ul.data("trans-element-drop"),
                         li = drop.find("li");
 
@@ -544,11 +541,12 @@
                     }
                     else {
                         li.each(function () {
-                            if (!!$(this).data("settings").alwaysvisible) {
-                                $(this).show();
+							var _li = $(this);
+                            if (!!_li.data("settings").alwaysvisible) {
+                                _li.show();
                             }
                             else {
-                                $(this)[$(this).text().toLowerCase().indexOf(val) == -1 ? "hide" : "show"]();
+                                _li[_li.text().toLowerCase().indexOf(val) < 0 ? "hide" : "show"]();
                             }
                         });
                     }
@@ -560,8 +558,8 @@
 
                     try {
                         drop.find("li").filter(function () {
-                            return $(this).text() == select.find("option").eq(index).text();
                         }).first().trigger("click");
+                            return $(this).text() == select.find("option").eq(index).text();
                     }
                     catch (e) { }
                 },
@@ -577,12 +575,10 @@
                 */
                 getLIOptionChild: function (option) {
                     var settings = $(option).attr("data-settings");
-                    if (!!settings) {
+                    if (settings) {
                         settings = "data-settings='" + settings + "'";
                     }
-                    if ($(option).hasClass('hideMe')) {
-                        settings = settings + " class='hideMe'";
-                    }
+					settings += " class='" + $(option).attr('class') + "'";
                     return "<li " + settings + ">" + options.subTemplate.call(this, $(option)) + "</li>";
                 },
                 /*
@@ -602,13 +598,13 @@
                 },
                 getLIIndex: function (el) {
                     var index = 0, group, sel;
-                    if (el.closest(".group").length != 0) {
+                    if (el.closest(".group").length) {
                         group = el.closest(".group");
                         index = el.closest(".transformSelectDropdown").find("li").index(el) - group.prevAll(".group").length - 1;
                     }
                     else {
                         index = el.parent().find("li").index(el);
-                        if (options.showFirstItemInDrop == false) {
+                        if (!options.showFirstItemInDrop) {
                             index += 1;
                         }
                         index -= el.prevAll(".group").length;
@@ -619,16 +615,17 @@
                 *	Select a new value
                 */
                 selectNewValue: function () {
-                    var $drop = $(this).closest(".transformSelectDropdown"),
+                    var _this = $(this),
+						$drop = _this.closest(".transformSelectDropdown"),
 						$ul = $drop.data("trans-element"),
                         select = method.getSelect($ul),
-                        index = method.getLIIndex($(this));
+                        index = method.getLIIndex(_this);
 
                     select[0].selectedIndex = index;
 
                     // If it has an input, there is no span used for value holding
-                    if ($ul.find("input").length > 0) {
-                        $ul.find("input").val(options.valueTemplate.call($(this)));
+                    if ($ul.find("input").length) {
+                        $ul.find("input").val(options.valueTemplate.call(_this));
                     }
                     else {
                         sel = select.find("option:selected");
@@ -668,15 +665,16 @@
                     //						);
                 },
                 selectCheckbox: function (e) {
-                    var $drop = $(this).closest(".transformSelectDropdown"),
+                    var _this = $(this),
+						$drop = _this.closest(".transformSelectDropdown"),
 						$ul = $drop.data("trans-element"),
                         select = method.getSelect($ul),
-                        t = $(this).closest("li"),
+                        t = _this.closest("li"),
                         checkbox = t.find(":checkbox"),
                         index, group;
 
                     if ($(e.target).is("li")) {
-                        t = $(this);
+                        t = _this;
                     }
 
                     index = method.getLIIndex(t);
@@ -687,7 +685,7 @@
 
                     select.find("option").eq(index).prop("selected", checkbox.is(":checked"));
 
-                    if (checkbox.data("transformCheckbox.initialized") === true) {
+                    if (checkbox.data("tfc.init")) {
                         checkbox.transformCheckbox("setImage");
                     }
 
@@ -706,7 +704,7 @@
 						childLI = $(this).parent();
 
                     if (UL.hasClass("disabled")) {
-                        return false;
+                        return 0;
                     }
 
                     // Close on second click
@@ -740,7 +738,7 @@
                     var allElements = $("body").find("*"),
 						elIndex = allElements.index($(this).parent());
 
-                    $("body").find("ul.trans-element:not(.ignore)").each(function () {
+                    $("body").find("ul.trans-element").each(function () {
                         var childUL = $(this).data("trans-element-drop");
 
                         if (elIndex - 1 != allElements.index($(this))) {
@@ -762,7 +760,7 @@
                     }
                 },
                 closeAllDropdowns: function () {
-                    $("ul.trans-element:not(.ignore)").each(function () {
+                    $("ul.trans-element").each(function () {
                         $(this).data("trans-element-drop").hide();
                         $(this).find("li:first").removeClass("open")
                     }).removeClass("trans-focused");
@@ -774,18 +772,19 @@
                 return this;
             }
             return this.each(function () {
+				var _this = $(this);
+				
                 // Is already initialized
-                if (!$(this).data("transformSelect.initialized")) {
+                if (!_this.data("tfs.init")) {
                     options = $.extend(defaults, opts);
-                    $(this).data("settings", options);
+                    _this.data("settings", options);
 
                     // set initialized
-                    $(this).data("transformSelect.initialized", 1);
+                    _this.data("tfs.init", 1);
 
                     // Call init functions
                     method.init.call(this);
                 }
-                return this;
             });
         },
         /*
@@ -875,34 +874,30 @@
 
             return this.each(function (i) {
                 // Is already initialized
-                if ($(this).data("transformFile.initialized")) {
-                    return this;
+                if (!$(this).data("tff.init")) {
+                    // set initialized
+					$(this).data("tff.init", 1);
+
+					// 
+					var el = $(this).hide(),
+						id = null,
+						name = el.attr('name'),
+						cssClass = (!options ? 'customInput' : (options.cssClass ? options.cssClass : 'customInput')),
+						label = (!options ? 'Browse...' : (options.label ? options.label : 'Browse...'));
+
+					if (!el.attr('id')) { el.attr('id', 'custom_input_file_' + (new Date().getTime()) + Math.floor(Math.random() * 100000)); }
+					id = el.attr('id');
+
+					el.after('<span id="' + id + '_custom_input" class="' + cssClass + '"><span class="inputPath" id="' + id + '_custom_input_path">&nbsp;</span><span class="inputButton">' + label + '</span></span>');
+
+					method.file.call($('#' + id + '_custom_input'), function (inp) {
+						inp.id = id;
+						inp.name = name;
+						$('#' + id).replaceWith(inp)
+								   .removeAttr('style').hide();
+						$('#' + id + '_custom_input_path').html($('#' + id).val().replace(/\\/g, '/').replace(/.*\//, ''));
+					}, cssClass);
                 }
-
-                // set initialized
-                $(this).data("transformFile.initialized", 1);
-
-                // 
-                var el = $(this).hide(),
-					id = null,
-					name = el.attr('name'),
-					cssClass = (!options ? 'customInput' : (options.cssClass ? options.cssClass : 'customInput')),
-					label = (!options ? 'Browse...' : (options.label ? options.label : 'Browse...'));
-
-                if (!el.attr('id')) { el.attr('id', 'custom_input_file_' + (new Date().getTime()) + Math.floor(Math.random() * 100000)); }
-                id = el.attr('id');
-
-                el.after('<span id="' + id + '_custom_input" class="' + cssClass + '"><span class="inputPath" id="' + id + '_custom_input_path">&nbsp;</span><span class="inputButton">' + label + '</span></span>');
-
-                method.file.call($('#' + id + '_custom_input'), function (inp) {
-                    inp.id = id;
-                    inp.name = name;
-                    $('#' + id).replaceWith(inp)
-							   .removeAttr('style').hide();
-                    $('#' + id + '_custom_input_path').html($('#' + id).val().replace(/\\/g, '/').replace(/.*\//, ''));
-                }, cssClass);
-
-                return this;
             });
 
         },
@@ -1001,7 +996,7 @@
 								textBefore = val.substr(0, caretStart + 1);
 							}
 
-							method.toDiv.call(this, false, textBefore, textAfter);
+							method.toDiv.call(this, 0, textBefore, textAfter);
 
 							// If you go through the bottom
 							if (tar.height() > (src.height() + sTop)) {
@@ -1033,7 +1028,7 @@
 							textBefore = v.substr(0, caretStart),
 							textAfter = v.substr(caretStart);
 
-				        method.toDiv.call(this, true, textBefore, textAfter);
+				        method.toDiv.call(this, 1, textBefore, textAfter);
 
 				        // If your halfway the scroll, then dont scroll
 				        if (
@@ -1151,7 +1146,7 @@
             return this.each(function () {
                 if (!$(this).next().hasClass(settings.hiddenTextareaClass)) {
                     method.init.call(this);
-                    method.toDiv.call(this, true);
+                    method.toDiv.call(this, 1);
                 }
             });
         }
