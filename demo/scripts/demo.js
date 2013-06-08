@@ -4,11 +4,17 @@ $(function(){
 		Transform a radio button
 		================			
 	*/
-	$("input:radio").transformRadio({
+	$(".image input:radio").transformRadio({
 		checked : "img/chk_on.png",
 		unchecked : "img/chk_off.png",
 		disabledChecked: "/images/content/filterBoxCheckboxDisabledChecked.jpg",
-		disabledUnchecked: "/img/webshop/checkbox2_disabled.png",
+		disabledUnchecked: "/img/webshop/checkbox2_disabled.png"
+	});
+	
+	$(".class input:radio").transformRadio({
+		base : "class",
+		checked : "img/chk_on.png",
+		unchecked : "img/chk_off.png"
 	});
 	
 	/*

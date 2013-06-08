@@ -14,6 +14,7 @@
 <!-- Fancyform -->
 <script type="text/javascript" src="../lib/jquery.mousewheel.js"></script>
 <script type="text/javascript" src="../lib/jquery.hotkeys.js"></script>
+<!-- <script type="text/javascript" src="../dev/jquery.fancyform.js"></script> -->
 <script type="text/javascript" src="jquery.fancyform.min.js"></script>
 
 <!-- Demo JS -->
@@ -42,7 +43,7 @@
 		<p>
 			You can transform your own radio button into any image you want to use. If an image is clicked the radio button will be checked and the <code class="prettyprint">$("input:radio").change();</code> event will be triggered.
 		</p>
-		<div class="radio">
+		<div class="radio image">
 			<input type="radio" name="radio" /> Yes  
 			<input name="radio" type="radio" /> No 
 			<input name="radio" type="radio" /> Unknown
@@ -51,6 +52,18 @@
 	checked : "img/chk_on.png", 	// Checked image to show
 	unchecked : "img/chk_off.png"	// Unchecked image to show
 });</pre>
+
+         <div class="radio class">
+			<input type="radio" name="radio" /> Yes  
+			<input name="radio" type="radio" /> No 
+			<input name="radio" type="radio" /> Unknown
+		</div>
+		<pre class="prettyprint">$("input:radio").transformRadio({
+	base : "class", // Can be image or class, if class a span will be added
+	checked : "img/chk_on.png", 	// Checked image to show
+	unchecked : "img/chk_off.png"	// Unchecked image to show
+});</pre>
+
 		<h2>Checkbox</h2>
 		<p>
 			You can transform your own checkbox into any image you want to use. If an image is clicked the checkbox will be checked and the <code class="prettyprint">$("input:checkbox").change();</code> event will be triggered.<br />

@@ -112,7 +112,24 @@ textarea
 			text-indent	: 20px;
 			font-style: normal;
 		}
-		
+/* Radio */
+.trans-element-radio
+{
+	display: inline-block;
+	*display: block;
+	zoom: 1;
+	width: 16px;
+	height: 16px;
+	cursor: pointer;
+}
+.trans-element-radio.checked
+{
+	background: url(../img/chk_on.png);
+}
+.trans-element-radio.unchecked
+{
+	background: url(../img/chk_off.png);
+}
 /* Page CSS */
 *
 {

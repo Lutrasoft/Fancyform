@@ -87,47 +87,73 @@
         transformRadio: function (options) {
 
             var defaults = {
+				base : "image", // Can be image or class, if class a span will be added
+				
                 checked: "",
                 unchecked: "",
                 disabledChecked: "",
                 disabledUnchecked: "",
+				
                 trigger: "self" // Can be self or parent
             };
 
             var options = $.extend(defaults, options),
 
 			method = {
+				_removeClasses : function(){
+					var _this = $(this),
+						options = _this.data("options"),
+						k;
+						
+					for(k in options)
+					{
+						_this.parent().removeClass(k);
+					}
+				},
                 imageClick: function () {
-                    var input = $(this).prev(),
-						name = input.attr("name");
+                    var _this = $(this),
+						name = _this.attr("name");
 
-                    if (!input.is(":disabled")) {
+                    if (!_this.is(":disabled")) {
                         $("input[name='" + name + "']").prop("checked", 0).each(function () {
                             method.setImage.call(this);
                         });
 
-                        input
+                        _this
                             .prop("checked", 1)
                             .change();
 
-                        method.setImage.call(input);
+                        method.setImage.call(_this);
                     }
                 },
                 setImage: function () {
                     var _this = $(this),
 						dis = _this.is(":disabled"),
-						options = _this.data("options");
-
-                    if (!_this.next().is("img")) {
-                        _this.after("<img />");
-                    }
-
-                    _this.next("img")
-								.attr("src", options[
-									_this.is(":checked") ?
+						options = _this.data("options"),
+						prop = _this.is(":checked") ?
 									(dis ? "disabledChecked" : "checked") :
-									(dis ? "disabledUnchecked" : "unchecked")
-								]);
+									(dis ? "disabledUnchecked" : "unchecked");
+
+					if( options.base == "image" )
+					{
+						if (!_this.next().is("img")) {
+							_this.after("<img />");
+						}
+
+						_this.next("img")
+									.attr("src", options[
+										prop
+									]);
+					}
+					else
+					{
+						if( !_this.parent().is("span") )
+						{
+							_this.wrap("<span class='trans-element-radio' />");
+						}
+						method._removeClasses.call(this);
+						_this.parent().addClass(prop);
+					}
                 }
             };
 
@@ -145,16 +171,22 @@
 
 					method.setImage.call(this);
 
-					switch (options.trigger) {
-						case "parent":
-							_this.parent().click(function () {
-								method.imageClick.call(_this.nextAll("img:first"));
-							});
-							break;
-						case "self":
-							_this.nextAll("img:first").click(method.imageClick);
-							break;
+					if( options.base == "image" )
+					{
+						switch (options.trigger) {
+							case "parent":
+								_this.parent().click(function () {
+									method.imageClick.call(_this);
+								});
+								break;
+							case "self":
+								_this.nextAll("img:first").click($.proxy(method.imageClick, _this));
+								break;
+						}
+					}else{
+						_this.parent().click($.proxy(method.imageClick, this));
 					}
+					
 				}
             });
         },
@@ -1009,9 +1041,7 @@
 
 							// Scroll the px
 							if (vScroll) {
-								method.scrollToPx.call(this,
-														vScroll
-													);
+								method.scrollToPx.call(this, vScroll);
 							}
 						}
 				    },

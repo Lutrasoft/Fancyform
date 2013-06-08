@@ -10,6 +10,8 @@ Fancyform is a tool that offers a nice and elegant way to transform your HTML el
 You can transform your own radio button into any image you want to use. If an image is clicked the radio button will be checked and the radios `change` event will be triggered.
 
     $("input:radio").transformRadio({
+		base : "images",   // image or class, if class there will be added a span around the radio button, 
+						   //                 if image there will be placed an image after the input
         checked : "img/chk_on.png",   // Checked image to show
         unchecked : "img/chk_off.png"	// Unchecked image to show
     });
