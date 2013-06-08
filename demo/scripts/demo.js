@@ -22,6 +22,11 @@ $(function(){
 		Transform a checkbox
 		================			
 	*/
+	$(".class input:checkbox").transformCheckbox({
+		base : "class",
+		checked : "img/chk_on.png",
+		unchecked : "img/chk_off.png"	
+	});
 	$("input:checkbox:not(.tri)").transformCheckbox({
 		checked : "img/chk_on.png",
 		unchecked : "img/chk_off.png"	

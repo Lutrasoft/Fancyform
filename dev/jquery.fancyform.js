@@ -6,7 +6,7 @@
 * 
 * Copyright (c) 2010-2013 - Lutrasoft
 * 
-* Version: 1.3.8
+* Version: 1.3.9
 * Requires: jQuery v1.6.1+ 
 *
 * Dual licensed under the MIT and GPL licenses:
@@ -18,7 +18,17 @@
         return t.length < c ? t : t.substring(0, c) + "...";
     }
 
-	var _touch = !!('ontouchstart' in window);
+	var _touch = !!('ontouchstart' in window),
+		_removeClasses = function(){
+			var _this = $(this),
+				options = _this.data("options") || _this.data("settings"),
+				k;
+				
+			for(k in options)
+			{
+				_this.parent().removeClass(k);
+			}
+		};
 	
     $.fn.extend({
         /*
@@ -100,16 +110,6 @@
             var options = $.extend(defaults, options),
 
 			method = {
-				_removeClasses : function(){
-					var _this = $(this),
-						options = _this.data("options"),
-						k;
-						
-					for(k in options)
-					{
-						_this.parent().removeClass(k);
-					}
-				},
                 imageClick: function () {
                     var _this = $(this),
 						name = _this.attr("name");
@@ -151,7 +151,7 @@
 						{
 							_this.wrap("<span class='trans-element-radio' />");
 						}
-						method._removeClasses.call(this);
+						_removeClasses.call(this);
 						_this.parent().addClass(prop);
 					}
                 }
@@ -196,6 +196,7 @@
         transformCheckbox: function (settings) {
 
             var defaults = {
+					base : "image", // Can be image/class
 					checked: "",
 					unchecked: "",
 					disabledChecked: "",
@@ -210,7 +211,6 @@
                 // Handling the image
                 setImage: function () {
                     var cb = $(this),
-						img = cb.next(),
 						settings = cb.data('settings'),
 						src;
 
@@ -227,7 +227,16 @@
                     else {
                         src = "unchecked";
                     }
-                    img.attr("src", settings[src]);
+					
+					if( settings.base == "image" )
+					{
+						cb.next().attr("src", settings[src]);
+					}
+					else
+					{
+						_removeClasses.call(this);
+						cb.parent().addClass(src);
+					}
                 },
                 setProp: function (el, name, bool) {
                     $(el).prop(name, bool).change();
@@ -248,17 +257,17 @@
                 },
                 // Clicking the image
                 imageClick: function () {
-                    var prev = $(this).prev();
-                    if (!prev.is(":disabled")) {
-                        if (prev.is(":checked")) {
-							method.uncheck.call(prev);
-							options.changeHandler.call(prev, 1);
+                    var _this = $(this);
+                    if (!_this.is(":disabled")) {
+                        if (_this.is(":checked")) {
+							method.uncheck.call(_this);
+							options.changeHandler.call(_this, 1);
 						}
 						else {
-							method.check.call(prev);
-							options.changeHandler.call(prev, 0);
+							method.check.call(_this);
+							options.changeHandler.call(_this, 0);
 						}
-						method.handleTriState.call(prev);
+						method.handleTriState.call(_this);
                     }
                 },
                 // Tristate
@@ -335,18 +344,32 @@
 						_this.hide();
 
 						// Afbeelding
-						_this.after("<img />");
+						if( options.base == "image" )
+						{
+							_this.after("<img />");
+						}
+						else
+						{
+							_this.wrap("<span class='trans-element-checkbox' />");
+						}
 						method.setImage.call(this);
 
-						switch (options.trigger) {
-							case "parent":
-								_this.parent().click(function () {
-									method.imageClick.call(_this.nextAll("img:first"));
-								});
-								break;
-							case "self":
-								_this.next("img").click(method.imageClick);
-								break;
+						if( options.base == "image" )
+						{
+							switch (options.trigger) {
+								case "parent":
+									_this.parent().click(function () {
+										method.imageClick.call(this);
+									});
+									break;
+								case "self":
+									_this.next("img").click($.proxy(method.imageClick, this));
+									break;
+							}
+						}
+						else
+						{
+							_this.parent().click($.proxy(method.imageClick, this));
 						}
 					}
                 }

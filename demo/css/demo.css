@@ -130,6 +130,24 @@ textarea
 {
 	background: url(../img/chk_off.png);
 }
+/* Checkbox */
+.trans-element-checkbox
+{
+	display: inline-block;
+	*display: block;
+	zoom: 1;
+	width: 16px;
+	height: 16px;
+	cursor: pointer;
+}
+.trans-element-checkbox.checked
+{
+	background: url(../img/chk_on.png);
+}
+.trans-element-checkbox.unchecked
+{
+	background: url(../img/chk_off.png);
+}
 /* Page CSS */
 *
 {
