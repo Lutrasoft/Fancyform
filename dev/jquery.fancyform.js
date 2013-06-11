@@ -358,9 +358,7 @@
 						{
 							switch (options.trigger) {
 								case "parent":
-									_this.parent().click(function () {
-										method.imageClick.call(this);
-									});
+									_this.parent().click($.proxy(method.imageClick, this));
 									break;
 								case "self":
 									_this.next("img").click($.proxy(method.imageClick, this));
