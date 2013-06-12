@@ -627,12 +627,11 @@
                 *	GET option child
                 */
                 getLIOptionChild: function (option) {
-                    var settings = $(option).attr("data-settings");
-                    if (settings) {
-                        settings = "data-settings='" + settings + "'";
-                    }
-					settings += " class='" + $(option).attr('class') + "'";
-                    return "<li " + settings + ">" + options.subTemplate.call(this, $(option)) + "</li>";
+                    var settings = $(option).attr("data-settings") || '',
+						cls = ($(option).attr('class') || '') + 
+									($(option).is(":selected") ? ' selected' : '');
+
+                    return "<li data-settings='" + settings + "' class='" + cls + "'>" + options.subTemplate.call(this, $(option)) + "</li>";
                 },
                 /*
                 *	GET optgroup children
@@ -688,6 +687,10 @@
 								: options.valueTemplate.call(sel)
 							);
                     }
+					
+					// Set selected
+					$drop.find(".selected").removeClass("selected");
+					_this.addClass("selected");
 
                     method.closeAllDropdowns();
 
@@ -704,18 +707,18 @@
                 },
                 mobileChange: function () {
                     var select = $(this),
-		        $ul = method.getUL.call(this),
-		       	sel = select.find("option:selected");
+						$ul = method.getUL.call(this),
+						sel = select.find("option:selected");
 
-	        if (this.type != "select-multiple") {
-	            $ul
-        		.find("span:first")
-        		.html(
-        			options.ellipsisLength
-        			? $.simpleEllipsis(options.valueTemplate.call(sel), options.ellipsisLength)
-        			: options.valueTemplate.call(sel)
-        		);
-	        }
+					if (this.type != "select-multiple") {
+						$ul
+						.find("span:first")
+						.html(
+							options.ellipsisLength
+							? $.simpleEllipsis(options.valueTemplate.call(sel), options.ellipsisLength)
+							: options.valueTemplate.call(sel)
+						);
+					}
                 },
                 selectCheckbox: function (e) {
                     var _this = $(this),
