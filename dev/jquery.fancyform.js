@@ -703,17 +703,19 @@
                     }
                 },
                 mobileChange: function () {
-                    //var select = $(this),
-                    //    $ul = method.getUL.call(this),
-                    //	sel = select.find("option:selected");
+                    var select = $(this),
+		        $ul = method.getUL.call(this),
+		       	sel = select.find("option:selected");
 
-                    //                    $ul
-                    //						.find("span:first")
-                    //						.html(
-                    //							options.ellipsisLength
-                    //							? $.simpleEllipsis(options.valueTemplate.call(sel), options.ellipsisLength)
-                    //							: options.valueTemplate.call(sel)
-                    //						);
+	        if (this.type != "select-multiple") {
+	            $ul
+        		.find("span:first")
+        		.html(
+        			options.ellipsisLength
+        			? $.simpleEllipsis(options.valueTemplate.call(sel), options.ellipsisLength)
+        			: options.valueTemplate.call(sel)
+        		);
+	        }
                 },
                 selectCheckbox: function (e) {
                     var _this = $(this),
