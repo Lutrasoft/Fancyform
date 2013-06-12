@@ -650,18 +650,16 @@
                     return li;
                 },
                 getLIIndex: function (el) {
-                    var index = 0, group, sel;
-                    if (el.closest(".group").length) {
-                        group = el.closest(".group");
+                    var index = 0, group = el.closest(".group"), sel;
+                    if (group.length) {
                         index = el.closest(".transformSelectDropdown").find("li").index(el) - group.prevAll(".group").length - 1;
                     }
                     else {
-                        index = el.parent().find("li").index(el);
-                        if (!options.showFirstItemInDrop) {
-                            index += 1;
-                        }
-                        index -= el.prevAll(".group").length;
+                        index = el.parent().find("li").index(el) - el.prevAll(".group").length;
                     }
+                    if (!options.showFirstItemInDrop) {
+	            	index += 1;
+	            }
                     return index;
                 },
                 /*
