@@ -184,7 +184,14 @@
 								break;
 						}
 					}else{
-						_this.parent().click($.proxy(method.imageClick, this));
+						switch (options.trigger) {
+							case "parent":
+								_this.parent().parent().click($.proxy(method.imageClick, this));
+							break;
+							case "self":
+								_this.parent().click($.proxy(method.imageClick, this));
+							break;
+						}
 					}
 					
 				}
@@ -367,7 +374,14 @@
 						}
 						else
 						{
-							_this.parent().click($.proxy(method.imageClick, this));
+							switch (options.trigger) {
+								case "parent":
+									_this.parent().parent().click($.proxy(method.imageClick, this));
+									break;
+								case "self":
+									_this.parent().click($.proxy(method.imageClick, this));
+									break;
+							}
 						}
 					}
                 }
