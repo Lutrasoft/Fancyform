@@ -1,86 +1,47 @@
-.row
-{
-	clear	: both;
-	overflow	: hidden;	
-}
-.clear
-{
-	clear: both;
-}
-img
-{
-	cursor	: pointer;	
-}
-textarea
-{
-	float	: left;	
-	resize: none;
-	outline: none;
-	border-radius: 3px;
-	border		: 1px solid #cccccc;
-	font-family: Arial;
-	line-height: 18px;
-	padding: 10px;
-}
-#slider
-{
-	float	: left;	
-	margin	: 0 0 0 15px;
-	height	: 200px;
-}
 /*
 	transformSelect CSS
 */
 .transformSelect
 {
 	clear	: both;
+	width	: 200px;
 }
 .transformSelect li
 {
 	position: relative;
 	list-style: none;
-	width: 158px;
-	height: 22px;
 }
 .transformSelect span, .transformSelect input[type=text] {
-	background: #ffffff no-repeat url(../img/transformselect.gif) right top;
+	background: #ffffff no-repeat url(../img/transformselect.gif) right center;
     border: 1px solid #CCCCCC;
     color: #575757;
     cursor: pointer;
     display: block;
     left: 0;
     margin: 0;
-    padding: 0 3px;
+    padding: 3px 5px;
     top: 0;
     line-height: 20px;
-    height: 20px;
-    width: 150px;
+	border-radius: 5px;
+	-webkit-border-radius: 5px;
+}
+.transformSelect li.open span, .transformSelect li.open input[type=text]
+{
+	border-radius: 5px 5px 0 0;
+	-webkit-border-radius: 5px 5px 0 0;
 }
 .transformSelect input[type=text]
 {
-	border-right: 0;
-	width: 125px;
-	float: left;
-	background: #ffffff;
-}
-.transformSelect ins
-{  
-	float: right;
-    width: 25px;
-    height: 20px;
-    cursor: pointer;
-    display: block;
-	background: #ffffff no-repeat url(../img/transformselect.gif) right top;
-	border: 1px solid #CCCCCC;
-	border-left: 0;
+	width: 188px;
 }
 .transformSelect ul
 {
 	position: absolute;
 	border: 1px solid #CCCCCC;
-	left: 0;
-	top: 21px;
-	width: 156px;
+	border-top: 0;
+	width: 198px;
+	border-radius: 0 0 5px 5px;
+	-webkit-border-radius: 0 0 5px 5px;
 }
 .transformSelect ul span
 {
@@ -90,6 +51,8 @@ textarea
 .transformSelect ul span:hover
 {
 	background: #dddddd;
+	border-radius: 0;
+	-webkit-border-radius: 0;
 }
 	.transformSelect ul li
 	{
@@ -97,20 +60,40 @@ textarea
 	}
 		.transformSelect li.group ul
 		{
-			position: relative;
-			top: 0;
-			border-left: 0;
+			position: static;
+			border: 1px solid #dddddd;
 			border-right: 0;
+			border-left: 0;
 			border-radius: 0;
+			-webkit-border-radius: 0;
 		}
 		.transformSelect li.group span
 		{
 			font-style: italic;
+			border-radius: 0;
+			-webkit-border-radius: 0;
+			background: #F7F7F7;
+		}
+		.transformSelect li.group > span
+		{
+			background: #eeeeee;
+			border-top: 1px solid #dddddd;
 		}
 		.transformSelect li.group  ul span
 		{
-			text-indent	: 20px;
+			text-indent	: 10px;
 			font-style: normal;
+		}
+		.transformSelect ul li.group ul span:hover
+		{
+			background: #dddddd;
+		}
+		.transformSelect input[type=checkbox]
+		{
+			position: relative;
+			top: 2px;
+			margin: 0 5px 0 0;
+			cursor: pointer;
 		}
 /* Radio */
 .trans-element-radio
@@ -124,11 +107,20 @@ textarea
 }
 .trans-element-radio.checked
 {
-	background: url(../img/chk_on.png);
+	background: no-repeat url(../img/chk_on.png) center center;
 }
 .trans-element-radio.unchecked
 {
-	background: url(../img/chk_off.png);
+	background: no-repeat url(../img/chk_off.png) center center;
+}
+.image img, .trans-element-radio, .trans-element-checkbox, #tristate img
+{
+	padding: 5px;
+	border: 1px solid #dddddd;
+	border-radius: 5px;
+	-webkit-border-radius: 5px;
+	vertical-align: middle;
+	margin: 0 0 5px;
 }
 /* Checkbox */
 .trans-element-checkbox
@@ -142,11 +134,11 @@ textarea
 }
 .trans-element-checkbox.checked
 {
-	background: url(../img/chk_on.png);
+	background: no-repeat url(../img/chk_on.png) center center;
 }
 .trans-element-checkbox.unchecked
 {
-	background: url(../img/chk_off.png);
+	background: no-repeat url(../img/chk_off.png) center center;
 }
 /* Page CSS */
 *
@@ -154,6 +146,8 @@ textarea
 	margin	: 0;
 	padding	: 0;	
 	list-style	: none;
+	outline: none;
+	resize: none;
 }
 body
 {
@@ -187,6 +181,46 @@ p
 }
 #tristate li
 {
-	margin: 0 0 0 20px;
-	list-style: disc;
+	margin: 0;
+	list-style: none;
+}
+#tristate li ul
+{
+	background: repeat-y url(../img/treeview_ul.gif) 11px 2px;
+}
+#tristate li ul li
+{
+	padding: 0 0 0 28px;
+	background: no-repeat url(../img/treeview.gif) 11px 0;
+}
+.row
+{
+	clear	: both;
+	overflow	: hidden;	
+}
+.clear
+{
+	clear: both;
+}
+img
+{
+	cursor	: pointer;	
+}
+textarea
+{
+	float	: left;	
+	resize: none;
+	outline: none;
+	border-radius: 3px;
+	-webkit-border-radius: 3px;
+	border		: 1px solid #cccccc;
+	font-family: Arial;
+	line-height: 18px;
+	padding: 10px;
+}
+#slider
+{
+	float	: left;	
+	margin	: 0 0 0 15px;
+	height	: 200px;
 }
