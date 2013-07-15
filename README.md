@@ -83,3 +83,6 @@ Customize your own textarea like you've never done before! You can add any slide
 
 #Licence
 Fancyform dual licensed under the [MIT](http://opensource.org/licenses/mit-license.php) and [GPL](http://www.gnu.org/licenses/gpl.html) licenses.
+
+[![Bitdeli Badge](https://d2weczhvl823v0.cloudfront.net/Lutrasoft/Fancyform/trend.png)](https://bitdeli.com/free "Bitdeli Badge")
+
