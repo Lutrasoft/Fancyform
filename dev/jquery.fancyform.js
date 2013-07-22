@@ -6,7 +6,7 @@
 * 
 * Copyright (c) 2010-2013 - Lutrasoft
 * 
-* Version: 1.3.10
+* Version: 1.4.0
 * Requires: jQuery v1.6.1+ 
 *
 * Dual licensed under the MIT and GPL licenses:
@@ -90,113 +90,6 @@
                 return { start: start, end: end };
             }
         },
-		
-        /*
-        Replace radio buttons with images
-        */
-        transformRadio: function (options) {
-
-            var defaults = {
-				base : "image", // Can be image or class, if class a span will be added
-				
-                checked: "",
-                unchecked: "",
-                disabledChecked: "",
-                disabledUnchecked: "",
-				
-                trigger: "self" // Can be self or parent
-            };
-
-            var options = $.extend(defaults, options),
-
-			method = {
-                imageClick: function () {
-                    var _this = $(this),
-						name = _this.attr("name");
-
-                    if (!_this.is(":disabled")) {
-                        $("input[name='" + name + "']").prop("checked", 0).each(function () {
-                            method.setImage.call(this);
-                        });
-
-                        _this
-                            .prop("checked", 1)
-                            .change();
-
-                        method.setImage.call(_this);
-                    }
-                },
-                setImage: function () {
-                    var _this = $(this),
-						dis = _this.is(":disabled"),
-						options = _this.data("options"),
-						prop = _this.is(":checked") ?
-									(dis ? "disabledChecked" : "checked") :
-									(dis ? "disabledUnchecked" : "unchecked");
-
-					if( options.base == "image" )
-					{
-						if (!_this.next().is("img")) {
-							_this.after("<img />");
-						}
-
-						_this.next("img")
-									.attr("src", options[
-										prop
-									]);
-					}
-					else
-					{
-						if( !_this.parent().is("span") )
-						{
-							_this.wrap("<span class='trans-element-radio' />");
-						}
-						_removeClasses.call(this);
-						_this.parent().addClass(prop);
-					}
-                }
-            };
-
-            return this.each(function () {
-                var _this = $(this);
-
-                // Is already initialized
-                if (!_this.data("tfr.init")) {
-					// set initialized
-					// Radio hide
-					_this
-						.data("tfr.init", 1)
-						.hide()
-						.data("options", options);
-
-					method.setImage.call(this);
-
-					if( options.base == "image" )
-					{
-						switch (options.trigger) {
-							case "parent":
-								_this.parent().click(function () {
-									method.imageClick.call(_this);
-								});
-								break;
-							case "self":
-								_this.nextAll("img:first").click($.proxy(method.imageClick, _this));
-								break;
-						}
-					}else{
-						switch (options.trigger) {
-							case "parent":
-								_this.parent().parent().click($.proxy(method.imageClick, this));
-							break;
-							case "self":
-								_this.parent().click($.proxy(method.imageClick, this));
-							break;
-						}
-					}
-					
-				}
-            });
-        },
         /*
         Replace checkboxes with images
         */
@@ -248,6 +141,14 @@
                 setProp: function (el, name, bool) {
                     $(el).prop(name, bool).change();
                     method.setImage.call(el);
+					
+					// Checked and radio, change others
+					if( name == "checked" && !$(el).data('settings').type )
+					{
+						$("[name='" + $(el).attr("name") + "']").each(function(){
+							method.setImage.call(this);
+						});
+					}
                 },
                 // Handling the check/uncheck/disable/enable functions
                 uncheck: function () {
@@ -264,9 +165,11 @@
                 },
                 // Clicking the image
                 imageClick: function () {
-                    var _this = $(this);
+                    var _this = $(this),
+						settings = _this.data('settings');
+						
                     if (!_this.is(":disabled")) {
-                        if (_this.is(":checked")) {
+                        if (_this.is(":checked") && settings.type) {
 							method.uncheck.call(_this);
 							options.changeHandler.call(_this, 1);
 						}
@@ -342,11 +245,13 @@
                     var _this = $(this);
 
                     // Is already initialized
-                    if (!_this.data("tfc.init")) {
+                    if (!_this.data("tf.init")) {
 						// set initialized
-						_this.data("tfc.init", 1)
+						_this.data("tf.init", 1)
 							   .data("settings", options);
 
+						options.type = _this.is("[type=checkbox]");
+						
 						// Radio hide
 						_this.hide();
 
@@ -357,7 +262,7 @@
 						}
 						else
 						{
-							_this.wrap("<span class='trans-element-checkbox' />");
+							_this.wrap("<span class='trans-element-" + (options.type ? "checkbox" : "radio") + "' />");
 						}
 						method.setImage.call(this);
 
@@ -1122,7 +1027,8 @@
 							regSingleSpace = /\s/g,
 							res = src.val(),
 							appendEnter = 0,
-							appendEnterSpace = 0;
+							appendEnterSpace = 0,
+							brXHTML = "<br />";
 				        if (html)
 				            res = html;
 
@@ -1146,13 +1052,13 @@
 				        res = res	.replace(regEnter, "<br>") // No space or it will be replaced by the function below
 									.replace(regSpace, "&nbsp; ")
 									.replace(regSpace, "&nbsp; ") // 2x because 1x can result in: &nbsp;(space)(space) and that is not seen within the div
-									.replace(/<br>/ig, '<br />');
+									.replace(/<br>/ig, brXHTML);
 				        tar.html(res);
 
 				        if ((appendEnter || appendEnterSpace) && $.trim(textAfter)) {
 				            if (appendEnterSpace && $.browser.msie)
-				                tar.append("<br />");
-				            tar.append("<br />");
+				                tar.append(brXHTML);
+				            tar.append(brXHTML);
 				        }
 
 				        if (setHeight) {
@@ -1176,14 +1082,16 @@
 
 				    // Scroll to given PX
 				    scrollToPx: function (px) {
+						var _this = this;
 				        // Round on a row
-				        $(this).scrollTop(method.roundToLineHeight.call(this, px));
-				        method.scrollCallBack.call(this);
+				        $(_this).scrollTop(method.roundToLineHeight.call(_this, px));
+				        method.scrollCallBack.call(_this);
 				    },
 
 				    // Round to line height
 				    roundToLineHeight: function (num) {
-				        return Math.ceil(num / parseInt($(this).css("line-height"))) * parseInt($(this).css("line-height"));
+						var lh = parseInt($(this).css("line-height"));
+				        return Math.ceil(num / lh) * lh;
 				    },
 
 				    // Reset to default
@@ -1198,12 +1106,15 @@
 							.remove();
 				    },
 				    scrollCallBack: function () {
-				        var maxScroll = parseFloat($(this)[0].scrollHeight) - $(this).height(),
-							percentage = parseFloat($(this)[0].scrollTop) / maxScroll * 100;
+				        var _this = this,
+							_$this = $(_this),
+							_this0 = _$this[0],
+							maxScroll = parseFloat(_this0.scrollHeight) - _$this.height(),
+							percentage = parseFloat(_this0.scrollTop) / maxScroll * 100;
 				        percentage = percentage > 100 ? 100 : percentage;
 				        percentage = percentage < 0 ? 0 : percentage;
 				        percentage = isNaN(percentage) ? 100 : percentage;
-				        $(this).trigger("scrollToPx", [$(this)[0].scrollTop, percentage]);
+				        _$this.trigger("scrollToPx", [_this0.scrollTop, percentage]);
 				    }
 				};
 
@@ -1220,4 +1131,6 @@
         }
     });
 
+	// Radio and checkbox now use the same function
+	$.fn.transformRadio = $.fn.transformCheckbox;
 })(jQuery);
