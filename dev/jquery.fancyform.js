@@ -6,7 +6,7 @@
 * 
 * Copyright (c) 2010-2013 - Lutrasoft
 * 
-* Version: 1.4.0
+* Version: 1.4.1
 * Requires: jQuery v1.6.1+ 
 *
 * Dual licensed under the MIT and GPL licenses:
@@ -194,13 +194,13 @@
 						if (cb.hasClass("half-checked") || cb.is(":checked")) {
 							cb.removeClass("half-checked");
 							method.check.call(cb);
-							ul.find("input:checkbox").each(method.check);
+							ul.find("input:checkbox").removeClass("half-checked").each(method.check);
 						}
 						else if (cb.not(":checked")) {
 							cb.removeClass("half-checked");
 							ul.find("input:checkbox").each(method.uncheck);
 						}
-						method.setImage.call(cb);
+						ul.find("input:checkbox").each(method.setImage);
 
 						// Fix parents
 						if (cb.parent().parent().parent().is("li")) {
