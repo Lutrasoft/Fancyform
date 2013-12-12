@@ -620,7 +620,7 @@
                     $ul.addClass("trans-focused");
 
                     // Update validator
-                    if ($.fn.validate) {
+                    if ($.fn.validate  && select.closest("form").length) {
                         select.valid();
                     }
                 },
