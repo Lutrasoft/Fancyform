@@ -6,7 +6,7 @@
 * 
 * Copyright (c) 2010-2013 - Lutrasoft
 * 
-* Version: 1.4.1
+* Version: 1.4.2
 * Requires: jQuery v1.6.1+ 
 *
 * Dual licensed under the MIT and GPL licenses:
@@ -206,34 +206,36 @@
 						if (cb.parent().parent().parent().is("li")) {
 							method.handleTriStateLevel.call(cb.parent().parent().parent());
 						}
-
+						
 						cb.trigger("transformCheckbox.tristate");
 					}
                 },
                 // Handle all including parent levels
-                handleTriStateLevel: function () {
+                handleTriStateLevel: function (upwards) {
                     var _this = $(this),
 						firstCheckbox = _this.find("input:checkbox").first(),
 						ul = _this.find("ul"),
 						inputs = ul.find("input:checkbox"),
 						checked = inputs.filter(":checked");
 
-                    firstCheckbox.removeClass("half-checked");
+					if( upwards !== false || inputs.length) {
+						firstCheckbox.removeClass("half-checked");
 
-                    if (inputs.length == checked.length) {
-                        method.check.call(firstCheckbox);
-                    }
-                    else if (checked.length) {
-                        firstCheckbox.addClass("half-checked");
-                    }
-                    else {
-                        method.uncheck.call(firstCheckbox);
-                    }
-                    method.setImage.call(firstCheckbox);
+						if (inputs.length == checked.length) {
+							method.check.call(firstCheckbox);
+						}
+						else if (checked.length) {
+							firstCheckbox.addClass("half-checked");
+						}
+						else {
+							method.uncheck.call(firstCheckbox);
+						}
+						method.setImage.call(firstCheckbox);
 
-                    if (_this.parent().parent().is("li")) {
-                        method.handleTriStateLevel.call(_this.parent().parent());
-                    }
+						if (upwards !== false && _this.parent().parent().is("li")) {
+							method.handleTriStateLevel.call(_this.parent().parent());
+						}
+					}
                 }
             }
 
@@ -265,7 +267,10 @@
 							_this.wrap("<span class='trans-element-" + (options.type ? "checkbox" : "radio") + "' />");
 						}
 						method.setImage.call(this);
-
+						if (settings.tristate) {
+							method.handleTriStateLevel.call(_this.parent(), false);
+						}
+						
 						if( options.base == "image" )
 						{
 							switch (options.trigger) {
