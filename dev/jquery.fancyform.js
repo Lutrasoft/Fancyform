@@ -500,6 +500,9 @@
                 },
                 repaint: function () {
                     var ul = method.getUL.call(this);
+                    if (_touch) {
+	                ul.before(this);
+	            }
                     ul.data("trans-element-drop").remove();
                     ul.remove();
 
