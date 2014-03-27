@@ -352,7 +352,7 @@
                     }
 
                     // Maak een ul aan
-                    var ul = "<ul class='" + options.dropDownClass + " trans-element'><li>";
+                    var ul = "<ul class='" + options.dropDownClass + " trans-element' style='width: " + t.css('width') + ";'><li>";
 
                     if (options.acceptManualInput && !_touch) {
                         var value = t.data("value") || options.initValue.call(selectedOption);
@@ -423,7 +423,7 @@
                     $ul.find("span:first").click(method.openDrop);
 
                     // Set data if we use addDropdownToBody option
-                    $ul.find("ul:first").data("trans-element", $ul).addClass("transformSelectDropdown");
+                    $ul.find("ul:first").data("trans-element", $ul).addClass("transformSelectDropdown").css('width', t.width());
                     $ul.data("trans-element-drop", $ul.find("ul:first"));
 
                     if (options.addDropdownToBody) {
