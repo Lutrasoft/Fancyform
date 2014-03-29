@@ -12,7 +12,7 @@
 	list-style: none;
 }
 .transformSelect span, .transformSelect input[type=text] {
-	background: #ffffff no-repeat url(../img/transformselect.gif) right center;
+    background: #ffffff no-repeat url(../img/transformselect.gif) right center;
     border: 1px solid #CCCCCC;
     color: #575757;
     cursor: pointer;
@@ -22,8 +22,11 @@
     padding: 3px 5px;
     top: 0;
     line-height: 20px;
-	border-radius: 5px;
-	-webkit-border-radius: 5px;
+    border-radius: 5px;
+    -webkit-border-radius: 5px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 .transformSelect li.open span, .transformSelect li.open input[type=text]
 {
