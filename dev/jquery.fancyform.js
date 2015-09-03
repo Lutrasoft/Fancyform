@@ -4,9 +4,9 @@
 *
 * Examples and documentation at: https://github.com/Lutrasoft/Fancyform
 * 
-* Copyright (c) 2010-2013 - Lutrasoft
+* Copyright (c) 2010-2015 - Lutrasoft
 * 
-* Version: 1.4.2
+* Version: 1.4.3
 * Requires: jQuery v1.6.1+ 
 *
 * Dual licensed under the MIT and GPL licenses:
@@ -321,7 +321,7 @@
                 subTemplate: function (option) {
                     if ($(this)[0].type == "select-multiple") {
 
-                        return "<span><input type='checkbox' value='" + $(option).val() + "' " + ($(option).is(":selected") ? "checked='checked'" : "") + " name='" + $(this).attr("name").replace("_backup", "") + "' />" + $(option).text() + "</span>";
+                        return "<span><input type='checkbox' value='" + $(option).val() + "' " + ($(option).is(":selected") ? "checked='checked'" : "") + " name='" + $(this).attr("name").replace("_backup", "") + "' /><ins />" + $(option).text() + "</span>";
                     }
                     else {
                         return "<span>" + $(option).text() + "</span>";
@@ -420,6 +420,8 @@
                         $inp.keyup(method.filterByInput);
                     }
 
+					$ul.find("input").keydown(method.navigateThroughDropdown)
+					
                     $ul.find("span:first").click(method.openDrop);
 
                     // Set data if we use addDropdownToBody option
@@ -530,6 +532,62 @@
                             }
                         });
                     }
+                },
+				navigateThroughDropdown: function (e) {
+                    var ul = $(this).closest("ul"),
+                        drop = ul.data("trans-element-drop"),
+                        sel = drop.find(".active");
+
+
+                    switch (e.which) {
+                        case 40: /* DOWN */
+                            if (sel.length) {
+                                sel = sel.nextAll(":not(:hidden):first");
+                            }
+                            if (!sel.length) {
+                                sel = drop.find("li:not(:hidden):first");
+                            }
+                            var ToScroll = sel.prevAll(":not(:hidden)").length * sel.height() - (drop.height() - sel.height()),
+                                isVisible = (sel.prevAll(":not(:hidden)").length * sel.height()) > drop.scrollTop() && (sel.prevAll(":not(:hidden)").length * sel.height()) < drop.scrollTop() + drop.height();
+                            if (!isVisible) {
+                                drop.scrollTop(ToScroll);
+                            }
+
+                            this.lastKeyIsUpOrDown = true;
+                            break;
+                        case 38: /* UP */
+                            if (sel.length) {
+                                sel = sel.prevAll(":not(:hidden):first");
+                            }
+                            if (!sel.length) {
+                                sel = drop.find("li:not(:hidden):last");
+                            }
+
+                            var ToScroll = sel.prevAll(":not(:hidden)").length * sel.height(),
+                                isVisible = (sel.prevAll(":not(:hidden)").length * sel.height()) > drop.scrollTop() && (sel.prevAll(":not(:hidden)").length * sel.height()) < drop.scrollTop() + drop.height();
+                            if (!isVisible) {
+                                drop.scrollTop(ToScroll);
+                            }
+                            this.lastKeyIsUpOrDown = true;
+                            break;
+                        case 13: /* ENTER = SELECT */
+                            if (this.lastKeyIsUpOrDown) {
+                                method.selectIndex.call(ul.prevAll("select:first"), sel.index());
+                            }
+
+                            var fn = ul.prev().data("settings").onSubmit;
+                            if (fn) {
+                                fn.call(this);
+                            }
+
+                            this.lastKeyIsUpOrDown = false;
+                            break;
+                        default:
+                            this.lastKeyIsUpOrDown = false;
+                            break;
+                    }
+
+                    sel.addClass("active").siblings().removeClass("active");
                 },
                 selectIndex: function (index) {
                     var select = $(this),
