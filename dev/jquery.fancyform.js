@@ -659,7 +659,7 @@
                     select[0].selectedIndex = index;
 
                     // If it has an input, there is no span used for value holding
-                    if ($ul.find("input").length) {
+                    if ($ul.find("input[type=text]").length) {
                         $ul.find("input").val(options.valueTemplate.call(_this));
                     }
                     else {
