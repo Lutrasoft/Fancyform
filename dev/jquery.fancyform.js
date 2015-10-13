@@ -505,7 +505,9 @@
                     if (_touch) {
 	                ul.before(this);
 	            }
-                    ul.data("trans-element-drop").remove();
+	            if( ul.data("trans-element-drop") ) {
+                    	ul.data("trans-element-drop").remove();
+	            }
                     ul.remove();
 
                     method.init.call(this);
