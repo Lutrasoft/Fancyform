@@ -625,7 +625,7 @@
                 */
                 getLIOptgroupChildren: function (group) {
                     var _this = this,
-						li = "<li class='group'><span>" + $(group).attr("label") + "</span><ul>";
+						li = "<li class='group " + $(group).attr("class") + "'><span>" + $(group).attr("label") + "</span><ul>";
 
                     $(group).find("option").each(function () {
                         li += method.getLIOptionChild.call(_this, this);
