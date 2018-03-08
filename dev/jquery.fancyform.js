@@ -392,11 +392,6 @@
 						$inp = $ul.find("input");
                     t.after($ul);
 
-                    // Bind handlers
-                    if (t.is(":disabled")) {
-                        method.disabled.call(_this, 1);
-                    }
-
                     if (_this.type == "select-multiple" && !_touch) {
                         if (t.attr("name") && t.attr("name").indexOf("_backup") == -1) {
                             t.attr("name", t.attr("name") + "_backup");
@@ -489,6 +484,11 @@
                             position: "relative"
                         });
                         t.change(method.mobileChange);
+                    }
+
+                    // Bind handlers
+                    if (t.is(":disabled")) {
+                        method.disabled.call(_this, 1);
                     }
                 },
                 getUL: function () {
